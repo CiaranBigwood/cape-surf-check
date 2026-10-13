@@ -1,0 +1,1395 @@
+<title>Cape Surf Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: a dawn-patrol board. Sticky status bar; "right now" leaderboard; one filter row; map; spot cards;
+   10-day planner grid; how-to-read-the-Cape explainer; personal surf log. Phone first, one column; cards
+   two or three across on desktop. Rating is an ordinal five-step teal ramp plus a neutral step for "flat". */
+:root {
+  color-scheme: light;
+  --bg: #eef3f3;
+  --surface: #fbfdfd;
+  --surface-2: #e2eaeb;
+  --ink: #0f1f26;
+  --ink-2: #41545c;
+  --muted: #74868d;
+  --line: #d2dcdf;
+  --accent: #0b6f85;
+  --accent-ink: #ffffff;
+  --accent-soft: #d3e7ec;
+  --warn: #9a6512; --warn-bg: #fbefd9;
+  --bad: #a9271f; --bad-bg: #fae2df;
+  --good: #1d6f36; --good-bg: #dcefe1;
+  --night: #dbe3e5;
+  --r0: #cdd7da; --r0-ink: #41545c;
+  --r1: #6cb1c0; --r1-ink: #0f1f26;
+  --r2: #4b97aa; --r2-ink: #0f1f26;
+  --r3: #317b90; --r3-ink: #ffffff;
+  --r4: #1f6076; --r4-ink: #ffffff;
+  --r5: #0f465a; --r5-ink: #ffffff;
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", "Segoe UI", sans-serif;
+  --font-body: "Instrument Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(15,31,38,.05), 0 10px 28px -16px rgba(15,31,38,.25);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0e181d; --surface: #15232a; --surface-2: #1c2f37; --ink: #e8f0f2; --ink-2: #b3c3c9; --muted: #7e939b; --line: #27393f;
+    --accent: #4fc0d6; --accent-ink: #07171c; --accent-soft: #163a44;
+    --warn: #f2b85c; --warn-bg: #3a2a10; --bad: #f29a92; --bad-bg: #3d1c19; --good: #7bd396; --good-bg: #163b25; --night: #1a2a31;
+    --r0: #2a3a41; --r0-ink: #b3c3c9; --r1: #2f6d7c; --r1-ink: #e8f0f2; --r2: #3b8ca1; --r2-ink: #07171c;
+    --r3: #4faabf; --r3-ink: #07171c; --r4: #6fc5d8; --r4-ink: #07171c; --r5: #9fe0ee; --r5-ink: #07171c;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 28px -16px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e181d; --surface: #15232a; --surface-2: #1c2f37; --ink: #e8f0f2; --ink-2: #b3c3c9; --muted: #7e939b; --line: #27393f;
+  --accent: #4fc0d6; --accent-ink: #07171c; --accent-soft: #163a44;
+  --warn: #f2b85c; --warn-bg: #3a2a10; --bad: #f29a92; --bad-bg: #3d1c19; --good: #7bd396; --good-bg: #163b25; --night: #1a2a31;
+  --r0: #2a3a41; --r0-ink: #b3c3c9; --r1: #2f6d7c; --r1-ink: #e8f0f2; --r2: #3b8ca1; --r2-ink: #07171c;
+  --r3: #4faabf; --r3-ink: #07171c; --r4: #6fc5d8; --r4-ink: #07171c; --r5: #9fe0ee; --r5-ink: #07171c;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 28px -16px rgba(0,0,0,.6);
+}
+
+* { box-sizing: border-box; }
+body {
+  font-family: var(--font-body); font-size: 15px; line-height: 1.45; background: var(--bg); color: var(--ink);
+  padding-inline: clamp(16px, 3vw, 32px); padding-block: 0 56px; max-width: 1240px; margin: 0 auto;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h2 { font-size: 1.45rem; font-weight: 700; letter-spacing: -.01em; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+.sub { color: var(--ink-2); font-size: .92rem; }
+.muted { color: var(--muted); }
+.num { font-variant-numeric: tabular-nums; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin-block: 36px 14px; }
+section:first-of-type .sec-head { margin-top: 20px; }
+
+/* top bar */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px;
+  padding-block: 10px; margin-inline: calc(-1 * clamp(16px, 3vw, 32px)); padding-inline: clamp(16px, 3vw, 32px);
+  background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand h1 { font-size: 1.3rem; font-weight: 800; letter-spacing: -.02em; }
+.brand .mark { width: 30px; height: 30px; color: var(--accent); }
+.status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: .85rem; color: var(--ink-2); }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; font-size: .78rem; font-weight: 600; background: var(--surface-2); color: var(--ink-2); }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+.pill[data-src="live"] { background: var(--good-bg); color: var(--good); } .pill[data-src="live"]::before { background: var(--good); }
+.pill[data-src="cache"] { background: var(--accent-soft); color: var(--accent); } .pill[data-src="cache"]::before { background: var(--accent); }
+.pill[data-src="snapshot"] { background: var(--warn-bg); color: var(--warn); } .pill[data-src="snapshot"]::before { background: var(--warn); }
+.pill[data-src="error"] { background: var(--bad-bg); color: var(--bad); } .pill[data-src="error"]::before { background: var(--bad); }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 5px 11px; cursor: pointer; font-size: .85rem; font-weight: 500; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn.small { padding: 3px 8px; font-size: .78rem; }
+.notice { margin-top: 12px; padding: 10px 14px; border-radius: 8px; font-size: .9rem; background: var(--warn-bg); color: var(--warn); border: 1px solid color-mix(in srgb, var(--warn) 30%, transparent); }
+.notice.err { background: var(--bad-bg); color: var(--bad); border-color: color-mix(in srgb, var(--bad) 30%, transparent); }
+.notice.info { background: var(--accent-soft); color: var(--accent); border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
+
+/* right now */
+.lead { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.lead-card { display: flex; gap: 14px; align-items: stretch; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; min-width: 0; }
+.lead-rank { font-family: var(--font-display); font-weight: 700; font-size: .8rem; color: var(--muted); }
+.score-tile { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 74px; border-radius: 10px; padding: 8px 4px; }
+.score-tile .n { font-size: 1.9rem; font-weight: 600; line-height: 1; letter-spacing: -.02em; }
+.score-tile .l { font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
+.lead-body { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.lead-body h3 { font-size: 1.12rem; }
+.lead-body .where { font-size: .8rem; color: var(--muted); }
+.lead-body .line { font-size: .88rem; color: var(--ink-2); }
+.link { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; font-weight: 600; font-size: .85rem; text-align: left; }
+.link:hover { text-decoration: underline; }
+.week-lead { margin-top: 18px; display: flex; flex-direction: column; gap: 8px; }
+.empty { padding: 20px; border: 1px dashed var(--line); border-radius: var(--radius); color: var(--muted); text-align: center; }
+
+/* rating steps */
+.s0 { background: var(--r0); color: var(--r0-ink); } .s1 { background: var(--r1); color: var(--r1-ink); } .s2 { background: var(--r2); color: var(--r2-ink); }
+.s3 { background: var(--r3); color: var(--r3-ink); } .s4 { background: var(--r4); color: var(--r4-ink); } .s5 { background: var(--r5); color: var(--r5-ink); }
+.badge { display: inline-flex; align-items: baseline; gap: 5px; padding: 3px 9px; border-radius: 7px; font-weight: 600; font-size: .95rem; white-space: nowrap; }
+.badge small { font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+
+/* chips + filters */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px; font-size: .85rem; cursor: pointer; white-space: nowrap; }
+.chip:hover { border-color: var(--accent); }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.chip.day { display: inline-flex; gap: 6px; align-items: center; }
+.chip.day .sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.filters { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 52px); z-index: 40; background: var(--bg); padding-block: 10px; margin-top: 28px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--line); }
+.ctl { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: .85rem; color: var(--ink-2); }
+.ctl label { display: inline-flex; gap: 6px; align-items: center; }
+select, input[type="search"], input[type="date"], input[type="text"], textarea { font: inherit; font-size: .88rem; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; }
+input[type="search"] { min-width: 150px; }
+
+/* map */
+.map { height: 340px; border-radius: var(--radius); overflow: hidden; background: var(--surface-2); border: 1px solid var(--line); }
+.map.notiles { background: var(--surface-2); }
+.map-note { margin-top: 6px; font-size: .82rem; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: .78rem; color: var(--ink-2); align-items: center; }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.leaflet-container { font-family: var(--font-body); }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--surface); color: var(--ink); }
+.leaflet-popup-content { margin: 10px 14px; font-size: .9rem; }
+.leaflet-popup-content .badge { margin-right: 6px; }
+.leaflet-bar a { background: var(--surface); color: var(--ink); border-bottom-color: var(--line); }
+.leaflet-control-attribution { background: color-mix(in srgb, var(--surface) 80%, transparent); color: var(--muted); }
+.leaflet-control-attribution a { color: var(--accent); }
+.marker-label { background: transparent; border: 0; box-shadow: none; font-size: 11px; font-weight: 600; color: var(--ink); text-shadow: 0 0 3px var(--bg), 0 0 3px var(--bg), 0 0 3px var(--bg); white-space: nowrap; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .leaflet-tile { filter: brightness(.72) contrast(1.05) saturate(.7); } }
+:root[data-theme="dark"] .leaflet-tile { filter: brightness(.72) contrast(1.05) saturate(.7); }
+
+/* cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; }
+@media (max-width: 420px) { .cards { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px 16px; min-width: 0; display: flex; flex-direction: column; gap: 10px; scroll-margin-top: 120px; }
+.card.open { grid-column: 1 / -1; }
+.card-head { display: flex; align-items: flex-start; gap: 10px; }
+.card-head .title { flex: 1; min-width: 0; }
+.card-head h3 { font-size: 1.15rem; }
+.card-head .where { font-size: .8rem; color: var(--muted); }
+.card-head .where b { font-weight: 600; color: var(--ink-2); }
+.star { border: 0; background: none; cursor: pointer; font-size: 1.3rem; line-height: 1; color: var(--line); padding: 0 2px; }
+.star[aria-pressed="true"] { color: #e0a81c; }
+.star:hover { color: #e0a81c; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px 10px; }
+.metric { min-width: 0; }
+.metric .k { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+.metric .v { font-size: .95rem; font-weight: 600; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.metric .d { font-size: .78rem; color: var(--ink-2); }
+.tag { display: inline-block; font-size: .7rem; font-weight: 600; padding: 1px 6px; border-radius: 5px; background: var(--surface-2); color: var(--ink-2); text-transform: uppercase; letter-spacing: .04em; }
+.tag.offshore { background: var(--good-bg); color: var(--good); }
+.tag.cross { background: var(--warn-bg); color: var(--warn); }
+.tag.onshore { background: var(--bad-bg); color: var(--bad); }
+.tag.warn { background: var(--warn-bg); color: var(--warn); }
+.tag.bad { background: var(--bad-bg); color: var(--bad); }
+.arrow { display: inline-block; width: 12px; height: 12px; vertical-align: -1px; }
+.arrow path { fill: currentColor; }
+.next { font-size: .88rem; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+.strip { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; }
+.strip .cell { border-radius: 5px; text-align: center; font-size: .72rem; padding: 4px 0 3px; line-height: 1.1; cursor: pointer; border: 0; font-family: inherit; }
+.strip .cell b { display: block; font-size: .82rem; }
+.strip .cell.today { outline: 2px solid var(--ink); outline-offset: -2px; }
+.card-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.detail { display: grid; gap: 18px; padding-top: 6px; border-top: 1px solid var(--line); }
+.detail h4 { font-size: .98rem; margin-bottom: 8px; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 5px 12px; font-size: .9rem; }
+.kv dt { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; padding-top: 2px; }
+.kv dd { margin: 0; min-width: 0; }
+.why { display: grid; gap: 6px; font-size: .88rem; }
+.why .row { display: grid; grid-template-columns: 70px 1fr; gap: 10px; align-items: center; }
+.why .bar { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+.why .bar i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+.why .txt { grid-column: 2; color: var(--ink-2); font-size: .82rem; }
+.tides { display: flex; flex-wrap: wrap; gap: 8px; }
+.tide-ev { background: var(--surface-2); border-radius: 8px; padding: 6px 10px; font-size: .85rem; }
+.tide-ev b { display: block; font-size: .95rem; }
+.sources { font-size: .78rem; color: var(--muted); overflow-wrap: anywhere; }
+.conf { font-size: .78rem; }
+
+/* chart */
+.chart-wrap { position: relative; }
+.chart-scroll { overflow-x: auto; overscroll-behavior-x: contain; padding-bottom: 4px; }
+.chart { display: block; font-family: var(--font-body); }
+.chart .night { fill: var(--night); }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .daysep { stroke: var(--muted); stroke-width: 1; opacity: .5; }
+.chart .tick, .chart .daylab, .chart .rowlab { fill: var(--muted); font-size: 11px; }
+.chart .daylab { font-weight: 600; fill: var(--ink-2); }
+.chart .bar.off { fill: var(--line); }
+.chart .bar.s0 { fill: var(--r0); } .chart .bar.s1 { fill: var(--r1); } .chart .bar.s2 { fill: var(--r2); } .chart .bar.s3 { fill: var(--r3); } .chart .bar.s4 { fill: var(--r4); } .chart .bar.s5 { fill: var(--r5); }
+.chart .now { stroke: var(--ink); stroke-width: 1.5; }
+.chart .xhair { stroke: var(--accent); stroke-width: 1; }
+.chart .warrow { fill: var(--muted); } .chart .warrow.offshore { fill: var(--good); } .chart .warrow.cross { fill: var(--warn); } .chart .warrow.onshore { fill: var(--bad); }
+.chart .tide { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
+.chart .tidept { fill: var(--surface); stroke: var(--accent); stroke-width: 2; }
+.tip { position: absolute; top: 8px; left: 0; pointer-events: none; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); border-radius: 8px; padding: 8px 10px; font-size: .8rem; line-height: 1.4; min-width: 170px; z-index: 5; }
+.tip b { font-size: .9rem; }
+.tip .row { display: flex; justify-content: space-between; gap: 10px; }
+.tip .row span:last-child { font-weight: 600; }
+.chart-legend { margin-top: 6px; }
+details.tbl summary { cursor: pointer; font-size: .85rem; color: var(--accent); font-weight: 600; }
+.hourly { width: 100%; border-collapse: collapse; font-size: .82rem; margin-top: 8px; }
+.hourly th, .hourly td { padding: 4px 6px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.hourly th:first-child, .hourly td:first-child { text-align: left; }
+.table-wrap { overflow-x: auto; }
+
+/* planner */
+.plan { border-collapse: separate; border-spacing: 3px; font-size: .82rem; min-width: 640px; width: 100%; }
+.plan th { font-weight: 600; color: var(--ink-2); padding: 4px 6px; text-align: center; font-size: .78rem; }
+.plan th.spot { text-align: left; position: sticky; left: 0; background: var(--bg); z-index: 2; }
+.plan th.today { color: var(--ink); }
+.plan th.lowc { color: var(--muted); font-weight: 500; }
+.plan td.spot { position: sticky; left: 0; background: var(--bg); z-index: 2; white-space: nowrap; padding: 0 8px 0 0; font-weight: 600; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+.plan td.spot small { display: block; font-weight: 400; color: var(--muted); font-size: .72rem; }
+.plan td.cell { padding: 0; }
+.plan td.cell button { width: 100%; border: 0; border-radius: 6px; padding: 6px 2px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.plan td.cell button small { display: block; font-weight: 500; font-size: .68rem; opacity: .85; }
+.plan td.today button { box-shadow: inset 0 0 0 2px var(--ink); }
+
+/* learn */
+.learn details { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 4px 18px; margin-bottom: 10px; }
+.learn summary { cursor: pointer; font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; padding-block: 12px; }
+.learn .body { padding-bottom: 16px; max-width: 70ch; display: grid; gap: 10px; }
+.learn .body p, .learn .body li { color: var(--ink-2); }
+.learn .body ul { margin: 0; padding-left: 20px; }
+.learn table { border-collapse: collapse; font-size: .88rem; }
+.learn th, .learn td { text-align: left; padding: 5px 10px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.learn .body h4 { margin-top: 6px; }
+
+/* log */
+.log-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; background: var(--surface); padding: 14px 16px; border-radius: var(--radius); box-shadow: var(--shadow); align-items: end; }
+.log-form label { display: grid; gap: 4px; font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+.log-form label > * { font-size: .9rem; }
+.log-form .notes { grid-column: 1 / -1; }
+.log-list { display: grid; gap: 8px; margin-top: 12px; }
+.log-item { background: var(--surface); border-radius: 8px; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: .9rem; box-shadow: var(--shadow); }
+.log-item .stars { color: #e0a81c; letter-spacing: 1px; }
+.log-item .cond { color: var(--ink-2); font-size: .82rem; flex: 1 1 240px; }
+.log-summary { margin-top: 12px; padding: 12px 16px; border-radius: 8px; background: var(--accent-soft); color: var(--ink); font-size: .9rem; }
+.log-io { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.log-io textarea { width: 100%; min-height: 80px; font-family: ui-monospace, Consolas, monospace; font-size: .78rem; }
+
+.share-panel { margin-top: 12px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); }
+.share-inner { position: relative; display: flex; flex-wrap: wrap; gap: 18px 28px; padding: 16px 44px 16px 18px; align-items: flex-start; }
+.share-main { flex: 1 1 300px; min-width: 0; display: grid; gap: 8px; }
+.share-main h2 { font-size: 1.2rem; }
+.share-main h3 { font-size: .98rem; margin-top: 4px; }
+.share-main ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.share-url { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.share-url input { flex: 1 1 220px; min-width: 0; font-family: ui-monospace, Consolas, monospace; font-size: .82rem; }
+.qr-wrap { flex: 0 0 auto; display: grid; gap: 6px; justify-items: center; text-align: center; }
+.qr { background: #ffffff; padding: 10px; border-radius: 8px; line-height: 0; }
+.qr img, .qr canvas { display: block; width: 156px; height: 156px; }
+.share-close { position: absolute; top: 6px; right: 6px; border: 0; background: none; font-size: 1.5rem; line-height: 1; color: var(--muted); cursor: pointer; padding: 4px 10px; }
+@media (max-width: 640px) { .qr-wrap { display: none !important; } }
+footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); font-size: .8rem; color: var(--muted); display: grid; gap: 6px; max-width: 80ch; }
+.sr { position: absolute; left: -9999px; }
+@media (prefers-reduced-motion: no-preference) { .card, .chip, .btn { transition: box-shadow .15s, border-color .15s, background .15s; } }
+@media (max-width: 640px) {
+  .filters { top: calc(env(safe-area-inset-top, 0px) + 0px); position: static; }
+  .map { height: 260px; }
+  .score-tile { width: 64px; } .score-tile .n { font-size: 1.6rem; }
+}
+</style>
+<style>/*LEAFLET_CSS*/</style>
+
+<header class="top" id="top">
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 20c4-6 7-6 10-1s6 5 10-1 7-5 8-1" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M2 26c4-6 7-6 10-1s6 5 10-1 7-5 8-1" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" opacity=".45"/><circle cx="24" cy="8" r="3.2" fill="currentColor"/></svg>
+    <h1>Cape Surf Check</h1>
+  </div>
+  <div class="status">
+    <span class="pill" id="srcPill" data-src="loading">Loading</span>
+    <span class="updated num" id="updatedAt"></span>
+    <button class="btn small" id="shareBtn" type="button" aria-expanded="false" aria-controls="sharePanel">Share</button>
+    <button class="btn small" id="refreshBtn" type="button">Refresh</button>
+    <button class="btn small" id="unitsBtn" type="button" title="Switch units">m · km/h</button>
+  </div>
+</header>
+<p class="notice" id="notice" hidden></p>
+<section class="share-panel" id="sharePanel" hidden aria-label="Share and install">
+  <div class="share-inner">
+    <div class="share-main">
+      <h2>Take it with you</h2>
+      <p class="sub">Anyone can open this page on a phone or computer. No app or account needed.</p>
+      <div class="share-url">
+        <input id="shareUrl" type="text" readonly aria-label="Page address">
+        <button class="btn small" id="copyUrl" type="button">Copy</button>
+        <button class="btn small primary" id="nativeShare" type="button" hidden>Send to friends</button>
+      </div>
+      <h3>Put it on your home screen</h3>
+      <ul class="sub">
+        <li><b>iPhone:</b> open the page in Safari, tap the Share button, then <i>Add to Home Screen</i>.</li>
+        <li><b>Android:</b> open the page in Chrome, tap the ⋮ menu, then <i>Add to Home screen</i> or <i>Install app</i>.</li>
+      </ul>
+      <div><button class="btn small primary" id="installBtn" type="button" hidden>Install the app</button></div>
+    </div>
+    <div class="qr-wrap" id="qrWrap" hidden>
+      <div class="qr" id="qr" role="img" aria-label="QR code for this page"></div>
+      <p class="sub">Scan with your phone's camera</p>
+    </div>
+    <button class="share-close" id="closeShare" type="button" aria-label="Close">×</button>
+  </div>
+</section>
+
+<main>
+  <section class="now" id="nowSec">
+    <div class="sec-head"><h2>Right now</h2><p class="sub" id="nowSub">Loading the forecast…</p></div>
+    <div class="lead" id="leadNow"><div class="empty">Loading the forecast…</div></div>
+    <p class="sub" style="margin-top:8px">Scores are relative to each spot's own potential, the way surf sites rate them. Compare the face heights for size.</p>
+    <div class="week-lead">
+      <h3>Best of the next 9 days</h3>
+      <div class="chips" id="leadWeek"></div>
+    </div>
+  </section>
+
+  <section class="filters" id="filters" aria-label="Filters">
+    <div class="chips" id="regionChips"></div>
+    <div class="ctl">
+      <label>Level
+        <select id="levelSel">
+          <option value="all">All levels</option>
+          <option value="beginner">Beginner-friendly</option>
+          <option value="intermediate">Up to intermediate</option>
+          <option value="advanced">Up to advanced</option>
+        </select>
+      </label>
+      <label>Sort
+        <select id="sortSel">
+          <option value="now">Best now</option>
+          <option value="week">Best this week</option>
+          <option value="coast">Along the coast</option>
+          <option value="name">Name</option>
+        </select>
+      </label>
+      <button class="chip" id="favBtn" type="button" aria-pressed="false">★ Favourites</button>
+      <input type="search" id="searchBox" placeholder="Find a spot" aria-label="Find a spot">
+    </div>
+  </section>
+
+  <section class="map-sec" id="mapSec">
+    <div class="sec-head"><h2>Map</h2><div class="legend" id="rampLegend"></div></div>
+    <div id="map" class="map" role="region" aria-label="Map of surf spots"></div>
+    <p class="map-note" id="mapNote" hidden>Map tiles are blocked in this viewer, so the background is blank; the markers still sit at each spot's real position.</p>
+  </section>
+
+  <section class="spots" id="spotsSec">
+    <div class="sec-head"><h2>Spots</h2><p class="sub" id="spotsSub"></p></div>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section class="planner" id="plannerSec">
+    <div class="sec-head"><h2>9-day planner</h2><p class="sub">Best daylight rating each day. Tap a cell to open that spot. Days 8 and 9 are from the far end of the model run and shift a lot; treat them as a hint. An empty cell means the wave model has no data that far out yet.</p></div>
+    <div class="table-wrap"><table class="plan" id="planTable"></table></div>
+  </section>
+
+  <section class="learn" id="learnSec">
+    <div class="sec-head"><h2>How to read the Cape</h2><p class="sub">What the numbers mean, where our swell comes from, and which wind turns which coast on.</p></div>
+    <div id="learnBody"><!--EXPLAINER-->
+<details>
+<summary>Where Cape swell comes from</summary>
+<div class="body">
+<p><b>The Southern Ocean engine.</b> The waves you ride at Kommetjie or Llandudno were almost all made far to the south, by low-pressure storms moving west to east through the Southern Ocean. The CSIR's South African wave-climate study puts it directly: the major wave-generating system is "the regular cold fronts with their associated low pressure systems that pass west to east just to the south of the continent", and those lows, together with the South Atlantic High and the Indian Ocean High, "totally dominate the wave-generating forces" around the southern tip of Africa. The dominant wave direction is south-westerly <sup><a href="#src-S1">S1</a></sup>.</p>
+<p><b>The Roaring Forties.</b> The belt of strong westerly winds between roughly 40° and 50° South is strong because of "the combination of warm air being displaced upward from the Equator towards the South Pole, Earth's rotation, and the scarcity of landmasses to serve as windbreaks at those latitudes", with average winds around 10 m/s and gusts over 25 m/s <sup><a href="#src-S2">S2</a></sup>. Kommetjie's own community site describes the village as "the first landfall on the African continent for swells generated in the stormy 4 000 Km fetch known as the Roaring Forties", which is why it gets waves year-round <sup><a href="#src-S3">S3</a></sup>.</p>
+<p><b>How a storm becomes a groundswell.</b> A mid-latitude cyclone can be about 2,000 km across, with intense winds lasting three to five days. As the waves travel away from the storm, the longer-period waves move faster than the short ones and the swell "tidies up" into coherent lines <sup><a href="#src-S4">S4</a></sup>. That sorting is why a distant storm arrives as clean, evenly spaced groundswell, and why period (see the glossary) tells you how far and how hard the swell has travelled.</p>
+<p><b>Period ranges you will see.</b> A typical cold-front swell forecast from the Weather Service reads like this: "south-westerly swell and periods of 10 to 12 seconds" with 4 to 5.5 m seas <sup><a href="#src-S5">S5</a></sup>. Wavescape's forecasts routinely talk about "a 15 second 5ft west swell" or "4m @ 16 seconds" <sup><a href="#src-S6">S6</a></sup>. Bigger, rarer events run longer: a one-in-20-year summer swell that hit the Peninsula's western seaboard measured an 11 m maximum wave at about 18 s <sup><a href="#src-S4">S4</a></sup>, and Wavescape has tracked a 22-second groundswell from a 945 mb storm that produced 10 to 15 ft faces on open coasts <sup><a href="#src-S7">S7</a></sup>. Dungeons, the Hout Bay big-wave reef, is listed as wanting 15 to 19 s groundswell from the west to south-west <sup><a href="#src-S8">S8</a></sup>. In practice most surfable Cape groundswell sits in the 12 to 16 s band, with the strongest fronts pushing to 18 s and more [unverified as a measured statistic; the figures above are the sourced examples].</p>
+<p><b>Cut-off lows.</b> A cut-off low is "a closed upper-level low which has become completely displaced (cut off) from basic westerly current, and moves independently of that current"; because it is no longer steered by the westerlies it "can move slowly and erratically" <sup><a href="#src-S9">S9</a></sup>. The Weather Service describes one as "a slow-moving or stationary weather system that can cause prolonged severe weather in one area", and its warnings for these systems have carried wave heights "exceeding 5,0 to 7.0 m" <sup><a href="#src-S10">S10</a></sup> and "approximately 4.5 to 5.5 metres" <sup><a href="#src-S11">S11</a></sup>. Climate researchers describe them as "isolated wells of cold air in the upper atmosphere which tend to move slowly"; "unlike cold fronts, cut-off lows can form at any time of year", near Cape Town "they usually occur with south-easterly winds", and "they are the most common cause of the 'black south-easter' phenomenon" (section 3) <sup><a href="#src-S12">S12</a></sup>. Wikipedia's note that they are more common in autumn, winter and spring is a general one about "much of the areas affected, particularly in Australia and the Mediterranean Basin", not a South African statistic <sup><a href="#src-S9">S9</a></sup>.</p>
+<p><b>Summer south-easter windswell.</b> In summer the Cape Doctor itself makes waves: short-period windswell generated locally. Wavescape warns that wave models will often give "a localised windswell... priority over a smaller groundswell", and names "the southeaster in Cape Town" as the classic case <sup><a href="#src-S6">S6</a></sup>. That is why a summer forecast showing 2 m of swell can mean short-period chop on an exposed beach rather than a clean groundswell.</p>
+<p><b>Winter versus summer.</b> The lows "normally shift towards the south in summer and towards the north in winter so that high waves occur more frequently in winter" <sup><a href="#src-S1">S1</a></sup>; SAEON says the same thing about the westerly-wind belt moving north in winter <sup><a href="#src-S4">S4</a></sup>. Model statistics for Llandudno (a point 23 km offshore) show the contrast: in winter, swell of 2 to 3 m runs about 12% of the time and 1.3 to 2 m about 13%, with the mean direction from the west; in summer, 2 to 3 m swell drops to about 1% of the time and 1.3 to 2 m to about 4%, while swell under 1.3 m or none at all dominates <sup><a href="#src-S13">S13</a>, <a href="#src-S14">S14</a></sup>. Surf travel guides agree: May to August is the consistent season and winter is gun-board territory, with shortboards and fish the rest of the year <sup><a href="#src-S15">S15</a></sup>.</p>
+</div>
+</details>
+<details>
+<summary>The winter cold front, phase by phase</summary>
+<div class="body">
+<p>South African cold fronts form in the boundary between cold and warm air: "cold fronts in the sub tropics usually occur from 25°S to 40°S but on a few occasions as far north as 15-20°S". Typically "only the tail of cold front moves over South Africa with the Atlantic Ocean High moving behind it from the west and a coastal low about 5° east of the front". Fronts "have their largest effect on South Africa weather during the Southern Hemisphere autumn, winter and spring (March to October)" and are "most prevalent and most intense in Austral winter but summer cold fronts are not unknown" <sup><a href="#src-S16">S16</a></sup>. Here is the sequence, and what it does to each coast.</p>
+<p><b>Phase 1: pre-frontal north-wester.</b> "Ahead of the cold front, one would anticipate a dominantly north-westerly wind", pressure falls, and the coast warms up because "surface temperatures along the coastline increase due to the dry, off-shore northwesterly flow" <sup><a href="#src-S17">S17</a></sup>. On the Peninsula the south-easter "tends to create more onshore conditions along much of the False Bay coastline while some areas on the Atlantic side can be more protected or offshore", and "when the wind changes to the north-west, the opposite can occur, with cleaner conditions in parts of False Bay, including Muizenberg" <sup><a href="#src-S18">S18</a></sup>. This is Muizenberg's day: it "goes offshore in a northwesterly wind, and the small, rolling waves can be ridden almost year-round, cranking up a notch in winter swell" <sup><a href="#src-S19">S19</a></sup>. Kalk Bay Reef wants west-north-west offshores with a southerly or south-easterly groundswell and is a winter wave <sup><a href="#src-S20">S20</a></sup>. The same north-westerly is offshore at Betty's Bay (north-north-west) <sup><a href="#src-S21">S21</a></sup>, Onrus near Hermanus (north-west) <sup><a href="#src-S22">S22</a></sup> and Victoria Bay (north-north-west) <sup><a href="#src-S23">S23</a></sup>. On the Atlantic side only the spots with north-easterly offshores stay workable in a light northerly: Outer Kom and Witsands (north-east), Misty Cliffs and Scarborough (east-north-east) <sup><a href="#src-S24">S24</a>, <a href="#src-S25">S25</a>, <a href="#src-S26">S26</a>, <a href="#src-S27">S27</a></sup>. Once it swings true north-west and freshens, they go onshore.</p>
+<p><b>Phase 2: frontal passage.</b> The front itself brings the gale, the rain and the raw sea. Wavescape's description of a big one is "NW gales, 40ft seas and general carnage" <sup><a href="#src-S28">S28</a></sup>. Weather Service warnings typically run "strong to gale-force winds... north-westerly to westerly... becoming south-westerly", with 4 to 6 m seas <sup><a href="#src-S29">S29</a></sup>. Nothing on the open coast is worth paddling out in; this is the phase that makes the swell for the days that follow.</p>
+<p><b>Phase 3: post-frontal south-wester.</b> Behind the front the wind is "a south-westerly wind to the rear/west of the cold front", temperatures drop, and "the sea level pressure falls as the cold front approaches and rise sharply behind it", the rise being "a combination of the frontal trough moving eastwards and the Atlantic Ocean High pressure which ridges behind the cold front" <sup><a href="#src-S17">S17</a></sup>. A south-westerly is onshore for the west-facing Peninsula beaches, so the exceptions matter: Long Beach in Kommetjie sits tucked in and "sheltered", with its offshore listed as south <sup><a href="#src-S30">S30</a></sup>, and Cape Town Tourism describes it as "solid swell and a southwesterly wind delivering near-perfect waves that break both left and right" <sup><a href="#src-S19">S19</a></sup>; it needs very little swell to work and holds bigger swells and south-west winds <sup><a href="#src-S31">S31</a>, <a href="#src-S15">S15</a></sup>. East of Cape Agulhas the picture flips: Mossel Bay's Outer Pool wants a clean south swell and a light westerly, Still Bay's heavy right point wants a big south to south-east swell and a light westerly <sup><a href="#src-S32">S32</a></sup>, and Wavescape's note on a huge Cape Town swell was that the real prize was "east of Agulhas" in "glassy to light W or variable breezes on the dawnie" <sup><a href="#src-S7">S7</a></sup>.</p>
+<p><b>Phase 4: south then south-east as the high ridges in.</b> As the ridge of high pressure moves across behind the front, the wind backs from south-westerly through southerly to south-easterly. The Weather Service's own wording for one such week: "south-westerly swell and periods of 10 to 12 seconds becoming southerly to South-South Easterly", with "strong to near gale southerly to South Easterly" winds spreading from Alexander Bay to Cape Agulhas and on to Plettenberg Bay <sup><a href="#src-S5">S5</a></sup>. The flow around the ridging high is the same flow that gives Cape Town its summer south-easter <sup><a href="#src-S33">S33</a></sup>. This is the Atlantic Seaboard's turn. Llandudno's offshores are east to south-east (67.5° to 157.5°) <sup><a href="#src-S34">S34</a></sup>, Big Bay's are east-south-east <sup><a href="#src-S35">S35</a></sup>, Long Beach's are south <sup><a href="#src-S30">S30</a></sup>, and Elands Bay's are south-east <sup><a href="#src-S36">S36</a></sup>, while Caves at Kogel Bay in the eastern corner of False Bay is also offshore in east to south-east <sup><a href="#src-S37">S37</a></sup>. Muizenberg, meanwhile, goes onshore because a south-easterly is onshore along much of False Bay <sup><a href="#src-S18">S18</a></sup>. The leftover groundswell with a fresh south-easterly is the classic clean window on the Atlantic side; the cold snap that comes with the ridge is part of the deal <sup><a href="#src-S28">S28</a></sup>.</p>
+<p>Which spot turns on in which phase is a synthesis from the offshore directions above; the directions themselves are sourced.</p>
+</div>
+</details>
+<details>
+<summary>Summer: the South-Easter, the Cape Doctor</summary>
+<div class="body">
+<p><b>What it is.</b> The Cape Doctor is "the strong, often persistent and dry south-easterly wind on the South African coast" that "blows from spring to late summer (September to March in the southern hemisphere)", named "because of a local belief that it clears Cape Town of pollution and 'pestilence'". It makes the "table cloth" on Table Mountain <sup><a href="#src-S38">S38</a></sup>. It exists because the South Atlantic High sits further south in summer and "the counter-clockwise flow around the High forms the basis for the summer southeast trade wind" <sup><a href="#src-S33">S33</a></sup>.</p>
+<p><b>Where it is offshore.</b> On the Atlantic Seaboard: Llandudno's offshores are east to south-east <sup><a href="#src-S34">S34</a></sup> and it "works in a south-to-southeast wind" <sup><a href="#src-S19">S19</a></sup>. In Kommetjie, Long Beach's offshore is from the south and the beach is "sheltered" <sup><a href="#src-S30">S30</a></sup>. Up the West Coast, Big Bay is "best surfed in a south or south-easterly wind" <sup><a href="#src-S19">S19</a></sup>, its model offshore is east-south-east <sup><a href="#src-S35">S35</a></sup>, and Milnerton "works best in a south-to-south-easterly wind, but it can get a bit heavy for beginners" <sup><a href="#src-S19">S19</a></sup>. Kitesurfers at Blouberg count on the same wind from October to April, with December to February the peak <sup><a href="#src-S39">S39</a></sup>.</p>
+<p><b>What it does to False Bay.</b> The south-easterly "tends to create more onshore conditions along much of the False Bay coastline", including Muizenberg <sup><a href="#src-S18">S18</a></sup>. The exception is the bay's eastern shore: Caves at Kogel Bay is a right-hander "over sand and rocks", offshore in east to south-east, a summer break, and "it picks up more swell than any other spot around Cape Town", best on a low to medium rising tide <sup><a href="#src-S37">S37</a></sup>.</p>
+<p><b>The daily pattern and the morning glass-off.</b> Wind strength tracks the land heating. Wavescape's Steve Pike: "the SE is often at its strongest in the afternoon" because "as the land heats up, more air is rising off the land and the pressure gradient between the two increases, making the air flow faster" <sup><a href="#src-S33">S33</a></sup>. From the Blouberg kite guide: "The day can start with zero wind but if a South Easterly is forecast then at some point you will see a line of wind creeping its way down the coast from the Mountain until it hits Blouberg and then Big Bay", starting around 20 knots, building to 30, and 30 to 40 knots in "a 'proper' south easter" <sup><a href="#src-S39">S39</a></sup>. For surfers that means early. Offshore, groomed conditions "typically occur at dawn" <sup><a href="#src-S40">S40</a></sup>, and the pattern of a light, clean early morning on the Atlantic side before the south-easter fills in by late morning or midday is the working rule [unverified as a measured statistic; it follows from the sources above].</p>
+<p><b>The cold water link: Benguela upwelling.</b> The Benguela Current "extends from roughly Cape Point in the south, to the position of the Angola-Benguela Front in the north, at around 16°S" and "is driven by the prevailing south easterly trade winds", which push surface water offshore so that "cold, nutrient rich waters... upwell from around 200–300 m" depth <sup><a href="#src-S41">S41</a></sup>. The Cape Peninsula upwelling cell extends "from Cape Columbine to Cape Point", and "upwelling-favourable, south-easterly winds reach a maximum during austral spring and summer, with the upwelling season extending from September to March" <sup><a href="#src-S42">S42</a></sup>. The winds that drive it are controlled "by the pressure gradient between the South Atlantic Anticyclone and a summertime interior low", and field surveys off the Cape have measured alongshore temperature gradients of 1°C per 10 km, "characteristic of summertime upwelling" <sup><a href="#src-S43">S43</a></sup>. The upwelled water can be very cold indeed: as low as 6°C has been recorded in Cape Town's upwelling <sup><a href="#src-S44">S44</a></sup>.</p>
+<p>So the wind that cleans up Llandudno is the wind that empties the warm water out of it. Surf-forecast's Llandudno sea-temperature page puts the coldest water of the year, "in the range 5 to 9°C", at "about the 24th of February", at the height of summer, and the warmest, "in the range 14 to 18°C", at "around the 18th of August" <sup><a href="#src-S45">S45</a></sup>. Treat those as a model's seasonal statistic rather than a thermometer reading: the ten-year satellite record for Kommetjie, a few bays south, bottoms out at 10.1°C in January and 9.4°C in April and October <sup><a href="#src-S51">S51</a></sup>, so 9 to 11°C is what a hard south-easter normally leaves at the surface and 5 to 6°C is the extreme tail <sup><a href="#src-S44">S44</a>, <a href="#src-S45">S45</a></sup>.</p>
+<p><b>Atlantic side versus False Bay, by season.</b> False Bay is "about 6 degrees warmer than the Atlantic Seaboard and the West Coast" <sup><a href="#src-S46">S46</a></sup>. The monthly figures:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Place</th><th>Summer (Jan/Feb)</th><th>Winter (Jul/Aug)</th><th>Source</th></tr></thead>
+<tbody>
+<tr><td>Muizenberg (False Bay)</td><td>Jan average 20°C, range 15 to 23°C</td><td>Aug average 15°C, range 13 to 18°C</td><td><sup><a href="#src-S47">S47</a>, <a href="#src-S48">S48</a></sup></td></tr>
+<tr><td>Kalk Bay Reef (False Bay)</td><td>warmest 19 to 23°C around 3 Feb</td><td>coldest 14 to 16°C around 15 Jul</td><td><sup><a href="#src-S49">S49</a></sup></td></tr>
+<tr><td>Cape Town (seatemperature.info point; exact location not stated)</td><td>Jan average 19.3°C, min 14.3°C, max 22.1°C</td><td>Aug average 16.0°C, min 14.0°C, max 17.8°C</td><td><sup><a href="#src-S50">S50</a></sup></td></tr>
+<tr><td>Kommetjie (Atlantic)</td><td>Jan average 17.6°C, min 10.1°C, max 21.1°C</td><td>Aug average 14.6°C, min 12.7°C, max 16.1°C</td><td><sup><a href="#src-S51">S51</a></sup></td></tr>
+<tr><td>Llandudno (Atlantic)</td><td>coldest of the year, 5 to 9°C around 24 Feb</td><td>warmest of the year, 14 to 18°C around 18 Aug</td><td><sup><a href="#src-S45">S45</a></sup></td></tr>
+</tbody></table></div>
+<p>Note what the table is telling you. The averages are satellite and model products that smooth over nearshore upwelling; the Llandudno and Kommetjie minimums are what a south-easter actually leaves behind. On the Atlantic side a summer south-easter can mean colder water than mid-winter.</p>
+<p><b>The black south-easter.</b> The dictionary definition: "a violent south-easterly wind, cold and usually accompanied with heavy rain", noted in 1981 as "a cold moist wind (the normal south easter is warm and dry)" <sup><a href="#src-S52">S52</a></sup>. It happens when the south-easter is accompanied by a cut-off low system, which "can cause heavy rains to fall over the Western Cape", a condition "popularly known as a Black South-Easter"; the Laingsburg flood of January 1981 is Wikipedia's example <sup><a href="#src-S38">S38</a></sup>. Climate researchers call cut-off lows "the most common cause of the 'black south-easter' phenomenon" <sup><a href="#src-S12">S12</a></sup>. The flow is the same as the fair-weather south-easter, so the offshore and onshore map is unchanged, but the sea is often disorganised and the cut-off low can bring big swell with it <sup><a href="#src-S10">S10</a>, <a href="#src-S11">S11</a></sup>.</p>
+<p><b>Berg winds.</b> A berg wind is "a hot, dry wind which blows in from the interior escarpment, down from the high central plateau to the coast" <sup><a href="#src-S53">S53</a></sup>. The dictionary notes it typically blows for two or three days in succession and is "most marked during winter months (April to September)" <sup><a href="#src-S54">S54</a></sup>, so think autumn through early spring rather than midsummer. The set-up is a high over the interior with a coastal low offshore <sup><a href="#src-S55">S55</a></sup>; "the coastal low which precedes the cold front by a few hundred kilometers" moves ahead of the front, and "along the south and east coasts of South Africa, the coastal low will always precede the cold front" <sup><a href="#src-S17">S17</a>, <a href="#src-S16">S16</a></sup>. Temperature jumps can be dramatic: 3°C to 27°C in 30 minutes in one 1985 winter case <sup><a href="#src-S53">S53</a></sup>. A berg wind is offshore, so it can groom the surf for a morning, but it is usually "followed by cool onshore winds which bring low cloud, fog or drizzle" <sup><a href="#src-S53">S53</a></sup>, and the coastal low is typically one to two days ahead of a front <sup><a href="#src-S55">S55</a></sup>. It also brings serious fire danger <sup><a href="#src-S55">S55</a></sup>.</p>
+</div>
+</details>
+<details>
+<summary>Tides at the Cape</summary>
+<div class="body">
+<p><b>The basics.</b> The SA Navy Hydrographic Office states it plainly: "Tides on the Southern African coasts are regular, semi-diurnal and their range seldom exceeds 2.2m" <sup><a href="#src-S56">S56</a></sup>. Semi-diurnal means two high waters and two low waters each day <sup><a href="#src-S57">S57</a></sup>. Spring tides come about twice a month around new and full moon, when the Sun's pull reinforces the Moon's and the range is at its maximum; neaps come at first and third quarter, when the range is at its minimum <sup><a href="#src-S57">S57</a></sup>. The Hydrographic Office's own definition: MHWS and MLWS are the averages of the two successive highs and lows "during those periods of 24 hours (approximately once a fortnight) when the range of the tide is greatest", MHWN and MLWN the same for the periods "when the range of the tide is least" <sup><a href="#src-S56">S56</a></sup>.</p>
+<p><b>Official mean levels (metres above chart datum, SAN HO-2, 2025).</b> Spring and neap ranges are the differences between the official levels.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Port</th><th>MLWS</th><th>MLWN</th><th>ML</th><th>MHWN</th><th>MHWS</th><th>HAT</th><th>Mean spring range</th><th>Mean neap range</th></tr></thead>
+<tbody>
+<tr><td>Cape Town</td><td>0.25</td><td>0.70</td><td>0.98</td><td>1.26</td><td>1.74</td><td>2.02</td><td>about 1.5 m</td><td>about 0.55 m</td></tr>
+<tr><td>Simon's Town</td><td>0.24</td><td>0.73</td><td>1.00</td><td>1.29</td><td>1.79</td><td>2.09</td><td>about 1.55 m</td><td>about 0.55 m</td></tr>
+<tr><td>Hermanus</td><td>0.27</td><td>0.75</td><td>1.02</td><td>1.29</td><td>1.78</td><td>2.07</td><td>about 1.5 m</td><td>about 0.55 m</td></tr>
+<tr><td>Mossel Bay</td><td>0.26</td><td>0.88</td><td>1.17</td><td>1.46</td><td>2.10</td><td>2.44</td><td>about 1.85 m</td><td>about 0.6 m</td></tr>
+</tbody></table></div>
+<p>Levels from <sup><a href="#src-S56">S56</a></sup>; the ranges are simple subtractions. "Chart Datum is now Lowest Astronomical Tide (LAT) in all ports of the Republic of South Africa and Namibia", "all times given are South African Standard Time (Time Zone - 2)", and the Hydrographic Office warns that "variations of water level caused by storm surges of more than 0.3m about the mean tidal curve have been recorded at ports on the SE coast of the Republic", with atmospheric pressure alone moving the level "by approximately 1cm per millibar" <sup><a href="#src-S56">S56</a></sup>. The biggest springs run higher than the means: the official October 2026 Cape Town table peaks on 26 October at a 1.87 m high over a 0.11 m low, a 1.76 m range, while the smallest neap of that month (19 October) is 1.17 m over 0.80 m, a 0.37 m range <sup><a href="#src-S85">S85</a></sup>. On the same spring day Simon's Town is 1.92 m over 0.10 m (1.82 m) and Mossel Bay 2.30 m over 0.12 m (2.18 m) <sup><a href="#src-S86">S86</a>, <a href="#src-S87">S87</a></sup>. So the practical rule is: Cape Town springs move about 1.5 to 1.8 m of water, neaps about 0.4 to 0.6 m, and the tide gets bigger as you go east, with Mossel Bay topping 2 m on the bigger springs <sup><a href="#src-S56">S56</a>, <a href="#src-S85">S85</a>, <a href="#src-S86">S86</a>, <a href="#src-S87">S87</a></sup>.</p>
+<p><b>Time offsets.</b> The official tables do not publish offsets between these ports: the SAN HO-2 front matter carries no secondary-port difference table, and Cape Town, Simon's Town, Hermanus and Mossel Bay are each one of the thirteen standard ports with their own daily predictions <sup><a href="#src-S56">S56</a></sup>, served as one monthly PDF per port <sup><a href="#src-S85">S85</a>, <a href="#src-S86">S86</a>, <a href="#src-S87">S87</a></sup>. Reading the official October 2026 tables side by side: on 12 October the afternoon high is at 16:01 in Cape Town, 15:57 at Simon's Town and 16:21 at Mossel Bay, and the morning low at 09:50, 09:45 and 10:02 <sup><a href="#src-S85">S85</a>, <a href="#src-S86">S86</a>, <a href="#src-S87">S87</a></sup>. Across the eight days checked (10 to 14 and 25 to 27 October) Simon's Town is 2 to 5 minutes earlier than Cape Town on every high and low, and Mossel Bay is 7 to 26 minutes later (high waters 17 to 26 minutes later, low waters 7 to 24) <sup><a href="#src-S85">S85</a>, <a href="#src-S86">S86</a>, <a href="#src-S87">S87</a></sup>. Working rule: Simon's Town a few minutes ahead of Cape Town, Mossel Bay about twenty minutes behind, never as much as half an hour. (The tide model the first draft leaned on gave 15:59, 15:56 and 16:29 for the same day <sup><a href="#src-S59">S59</a>, <a href="#src-S60">S60</a>, <a href="#src-S61">S61</a></sup>: within two minutes at Cape Town and Simon's Town, eight minutes late at Mossel Bay.) One month of one year, so treat it as a feel rather than a published rule [unverified as a general offset].</p>
+<p><b>What tide does to a break.</b> Tide changes the depth of water over the sand or rock, which changes how the swell breaks: "some banks only work on a pushing mid tide" while "some reefs are unsurfable until the water drops off them", and a beach that is a shore-dumping closeout at high water can show three separate peaks four hours later. Springs and neaps also change how hard the water moves <sup><a href="#src-S40">S40</a></sup>. Cape examples: Long Beach is best on low to medium tide because high tide makes the waves too deep to break on the sandbar <sup><a href="#src-S31">S31</a></sup>; Witsands works best at lower tides <sup><a href="#src-S25">S25</a></sup>; Caves wants "Low, Medium (best tide movement: Rising tide)" <sup><a href="#src-S37">S37</a></sup>; Kalk Bay Reef is best on incoming or outgoing tides <sup><a href="#src-S15">S15</a></sup>; Big Bay ("good surf at all stages of the tide"), Llandudno ("all tides are good") and Betty's Bay work at all stages <sup><a href="#src-S35">S35</a>, <a href="#src-S34">S34</a>, <a href="#src-S21">S21</a></sup>; and at Victoria Bay "the quality of the surf isn't affected by the tide" <sup><a href="#src-S23">S23</a></sup>. As a general rule, beach breaks are the most tide-sensitive, reefs often need the water to drop to break properly and can turn dangerous when it drops too far, and points tend to be the most forgiving, but check each spot's own page.</p>
+</div>
+</details>
+<details>
+<summary>Water temperature and the wetsuit guide</summary>
+<div class="body">
+<p>Two published charts agree closely. Surfertoday's bands: below 42°F / 5.5°C a 6/5 or 6/5/4 mm hooded full suit; 43 to 52°F / 6.1 to 11.1°C a 5/4 or 5/4/3 mm hooded full suit; 52 to 58°F / 11.1 to 14.4°C a 4/3 or 5/4/3 mm hooded full suit; 58 to 63°F / 14.4 to 17.2°C a 3/2 or 4/3 mm full suit; 62 to 68°F / 16.6 to 20°C a 2 mm to 3/2 mm spring or full suit; 65 to 75°F / 18.3 to 23.8°C a 0.5 mm to 2/1 mm short-arm steamer or jacket; above 72°F / 22.2°C a rashguard <sup><a href="#src-S62">S62</a></sup>. Rip Curl's Australian guide: 24°C and up boardies or a rashie; 18 to 24°C a 2 mm spring suit, short-arm or top; 16 to 18°C a 3/2 mm steamer, booties optional; 13 to 16°C a 4/3 mm steamer, booties recommended; 9 to 13°C a 4/3 or 5/4 mm with booties and gloves; below 9°C a 5/4 or 6/5 mm hooded steamer with booties, gloves and hood; and "every two-degree drop in water temperature usually pushes you up a thickness band" <sup><a href="#src-S63">S63</a></sup>. The spot pages add local colour: "the coldest seasonal sea temperatures at Kalk Bay Reef in mid July lend themselves to a 4/3mm wetsuit or a 3/2mm suit and 3mm neoprene boots", and in its warmest season "a 2mm long sleeve shorty or a 3/2mm spring wetsuit if the wind is up" <sup><a href="#src-S49">S49</a></sup>, while Llandudno's late-February minimum calls for "a flexible 6/5/4mm wetsuit or a well fitting 5/4mm wetsuit with gloves and 5mm neoprene booties and a hood", and even its warmest August water wants "a 4/3mm wetsuit or a 3/2mm suit and 3mm neoprene boots" <sup><a href="#src-S45">S45</a></sup>. The travel-guide shorthand is "4/3 wetsuit minimum kind of cold" <sup><a href="#src-S15">S15</a></sup>.</p>
+<p>Put together for the Cape:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Water temp</th><th>Where and when you meet it</th><th>Suit</th><th>Extras</th></tr></thead>
+<tbody>
+<tr><td>18°C and up</td><td>False Bay in late summer on a warm spell <sup><a href="#src-S47">S47</a>, <a href="#src-S49">S49</a></sup></td><td>3/2 mm steamer, or a 2 mm spring suit on a hot day</td><td>none</td></tr>
+<tr><td>15 to 18°C</td><td>False Bay most of the year; Cape Town and the Atlantic side in a warm, calm spell <sup><a href="#src-S47">S47</a>, <a href="#src-S50">S50</a>, <a href="#src-S51">S51</a></sup></td><td>3/2 mm or 4/3 mm steamer</td><td>boots optional</td></tr>
+<tr><td>13 to 15°C</td><td>Atlantic side in winter and most of the year at Kommetjie; False Bay in mid-winter <sup><a href="#src-S51">S51</a>, <a href="#src-S49">S49</a></sup></td><td>4/3 mm steamer</td><td>boots recommended</td></tr>
+<tr><td>10 to 13°C</td><td>Atlantic side after a few days of south-easter <sup><a href="#src-S51">S51</a></sup></td><td>4/3 or 5/4 mm</td><td>boots and gloves</td></tr>
+<tr><td>Below 10°C</td><td>A full-blown summer upwelling on the Atlantic Seaboard: Llandudno's 5 to 9°C late-February lows <sup><a href="#src-S45">S45</a></sup></td><td>5/4 or 6/5 mm hooded steamer</td><td>boots, gloves, hood</td></tr>
+</tbody></table></div>
+<p>Bands follow <sup><a href="#src-S62">S62</a></sup> and <sup><a href="#src-S63">S63</a></sup>; the "where and when" column is a mapping of those bands onto the temperature records above. Check the live reading before you commit: Shark Spotters' app carries water temperature for its beaches <sup><a href="#src-S64">S64</a></sup>, and surf-forecast's sea-temperature pages give a daily figure for Llandudno and Kalk Bay <sup><a href="#src-S45">S45</a>, <a href="#src-S49">S49</a></sup>.</p>
+</div>
+</details>
+<details>
+<summary>Regional seasonal guide</summary>
+<div class="body">
+<p>Best season, swell and wind for each stretch. Where a model page gives a "clean waves" percentage, it is the share of time in that spot's best month that the model rated clean and surfable.</p>
+<p><b>Atlantic Seaboard (Glen Beach, Camps Bay, Llandudno).</b> Llandudno takes swell from south-west to west (202.5° to 292.5°), with south-west the best match, is offshore in east to south-east (67.5° to 157.5°), is good at all tides, and is at its best "during summer and spring when the sandbanks are set and the swell comes from the southwest". The waves "are powerful and hollow", the water is cold, and weekend crowds include locals who are protective of their wave <sup><a href="#src-S34">S34</a></sup>. The first draft's size window of "2 to 6 ft and no more", the granite boulders and "the Gat" did not surface on re-reading the page <span class="tag warn">unverified</span>. It sits well sheltered from south-east gales <sup><a href="#src-S65">S65</a></sup>. Glen Beach is a fast, powerful wave over rocks for intermediate to advanced surfers; "the best time to catch consistent, clean waves at Glen Beach is in autumn, with April often serving up perfect rideable swells and light offshore winds" <sup><a href="#src-S19">S19</a></sup>. So: a leftover south-west groundswell with a south-easter, which is exactly the post-front or summer pattern.</p>
+<p><b>South Peninsula and Kommetjie (Long Beach, Outer Kom, Sunset, Misty Cliffs, Witsands, Scarborough).</b> Long Beach: sandbar, south-west swell, offshore from the south <sup><a href="#src-S30">S30</a></sup>, with a south-westerly also delivering "near-perfect waves" <sup><a href="#src-S19">S19</a></sup>; low to medium tide, works from about 4 ft and holds up to about 12 ft <sup><a href="#src-S31">S31</a></sup>; the model's best month is January with 66% clean, and "when the surf is up, crowds are likely. Beware of sharks, crowds" <sup><a href="#src-S30">S30</a></sup>. Outer Kom: "reef and point break", "ideal swell angle is from the west", "offshore winds are from the northeast", winter best with May the model's top month at 21% clean (and 70% blown out), "relatively few surfers here, even on good days", and "beware of sharks, kelp, rips urchins" <sup><a href="#src-S24">S24</a></sup>. Witsands: south-west swell, north-east offshore, lower tides, winter best (May), rips that "make surfing here dangerous", and cold water <sup><a href="#src-S25">S25</a></sup>. Misty Cliffs: south-west swell, east-north-east offshore, autumn best (April, 36% clean) and "summer tends to be mostly flat" <sup><a href="#src-S26">S26</a></sup>. Scarborough: west swell, east-north-east offshore, autumn best (May), strong rips <sup><a href="#src-S27">S27</a></sup>. Sunset Reef, off Kommetjie, is a big-wave reef "capable of getting well and truly over 30 feet" <sup><a href="#src-S66">S66</a></sup>. The deep south likes a north-east to easterly morning breeze with a west or south-west groundswell, and it gets its size from autumn to spring <sup><a href="#src-S24">S24</a>, <a href="#src-S25">S25</a>, <a href="#src-S26">S26</a>, <a href="#src-S27">S27</a></sup>.</p>
+<p><b>False Bay (Muizenberg, Kalk Bay, Fish Hoek, Kogel Bay).</b> Muizenberg: gentle beach break, beginner and longboard heaven, offshore in a north-westerly, rideable most of the year and better in winter swell <sup><a href="#src-S19">S19</a></sup>; the model calls it an "exposed beach break" with "lefts and rights", rates winter and June best with "the best swell direction... from the southeast" and "the best wind direction... from the west northwest", but only 4% of June is rated clean and surfable (5% blown out), which tells you it is a small-wave beach rather than a model favourite, and "sharks have been sighted" <sup><a href="#src-S67">S67</a></sup>. Expect triple-digit crowds when it is good <sup><a href="#src-S15">S15</a></sup>. Kalk Bay Reef: left and right reefs over submerged rocks, best with a southerly or south-easterly groundswell and north to north-west wind, winter, incoming or outgoing tide, rarely breaks and is often crowded when it does <sup><a href="#src-S20">S20</a>, <a href="#src-S15">S15</a></sup>. Caves at Kogel Bay: "right-hand break over sand and rocks", south-west swell (202.5° to 247.5°), east to south-east offshore, low to medium on a rising tide, a summer break that "picks up more swell than any other spot around Cape Town", with "break-ins happen at this car park" as the stated hazard and locals who "take this wave seriously" <sup><a href="#src-S37">S37</a></sup>. So: north-westers and winter for the Muizenberg side, south-easters and summer for the Kogel Bay side.</p>
+<p><b>West Coast (Big Bay to Elands Bay).</b> Big Bay: "beach break that has reasonably consistent surf", lefts and rights, "the ideal swell direction is from the southwest", "offshore winds are from the east southeast", "good surf at all stages of the tide", works any time of year with summer and March the model's best (61% clean, 33% blown out), "often crowded. Beware of rips and rocks" <sup><a href="#src-S35">S35</a></sup>. Bloubergstrand: beach break, south-west swell, north-east offshore, winter and May best, jetskis <sup><a href="#src-S68">S68</a></sup>. Milnerton: south to south-easterly wind, can get heavy for beginners <sup><a href="#src-S19">S19</a></sup>. Elands Bay, 220 km north: "reef, point and rivermouth", "a left hand reef and there is also a left hand point break", south-west swell, south-east offshore, autumn and April the model's best (65% clean), "take care of rocks, kelp", sometimes crowded <sup><a href="#src-S36">S36</a></sup>; the local guide puts the ideal as winter, "when the northwest swell coincides with southeast winds" <sup><a href="#src-S69">S69</a></sup>. The West Coast wants a south-westerly groundswell with a south-easterly or easterly wind: summer and autumn south-easters for the beaches near town, the bigger autumn and winter swells for Elands.</p>
+<p><b>Overberg (Kogel Bay to Hermanus).</b> Betty's Bay: beach break, south swell, north-north-west offshore, all tides, winter and June best (43% clean), rocks in the lineup <sup><a href="#src-S21">S21</a></sup>. Onrus at Hermanus: exposed, inconsistent beach break, south-west swell, north-west offshore, winter and June, submerged rocks <sup><a href="#src-S22">S22</a></sup>. The Overberg coast faces south, so it is a winter coast: south to south-west groundswell with the pre-frontal north-wester as the offshore <sup><a href="#src-S21">S21</a>, <a href="#src-S22">S22</a></sup>.</p>
+<p><b>Garden Route (Still Bay to Plett).</b> Still Bay: a bigger, heavier right point for a large south to south-east swell and a light westerly, with strong rips; the local season is May to September on a west swell <sup><a href="#src-S32">S32</a>, <a href="#src-S69">S69</a></sup>. Mossel Bay: beginner breaks in town and Inner and Outer Pool at the Point, small to medium south to south-west swell, light offshore, Outers producing large fast walls on a clean south swell and a light westerly <sup><a href="#src-S32">S32</a></sup>. Victoria Bay: "a right hand reef break", south swell best, "works best in offshore winds from the north northwest", "the quality of the surf isn't affected by the tide", winter and June best (38% clean), "watch out for rocks", crowded when it works <sup><a href="#src-S23">S23</a></sup>. Buffalo Bay and Plettenberg Bay offer beach breaks from beginner to intermediate, and Keurbooms wants glassy conditions on a mid to high tide <sup><a href="#src-S32">S32</a></sup>. The general rule for this coast is spring and autumn in light north or north-westerly winds, with good surf possible all year <sup><a href="#src-S32">S32</a></sup>.</p>
+</div>
+</details>
+<details>
+<summary>Safety</summary>
+<div class="body">
+<p><b>Shark Spotters: where they are.</b> Shark Spotters runs year-round, "365 days a year", at Muizenberg, Kalk Bay, Fish Hoek and Caves at Kogel Bay, with Clovelly and Monwabisi operating "only... during the spring summer season", plus a separate Plett programme <sup><a href="#src-S70">S70</a></sup>. The City of Cape Town lists the hours: Muizenberg and Kalk Bay/St James 08:00 to 18:00; Fish Hoek 07:00 to 18:45 in summer and 08:00 to 18:00 in winter; Caves 08:00 to 18:00 in summer and 08:00 to 17:00 in winter; Clovelly 10:00 to 17:00 and Monwabisi 08:00 to 18:00 from October to April on weekends, public holidays and school holidays <sup><a href="#src-S71">S71</a></sup>. An older Shark Spotters page also lists Glencairn and The Hoek at Noordhoek as seasonal beaches <sup><a href="#src-S72">S72</a></sup>; the current roster is the one in the app [unverified which page is more current]. Fish Hoek has an exclusion net: the City dates the partnership that installed it to 2012 <sup><a href="#src-S71">S71</a></sup>, and Shark Spotters says it "is only deployed during the summer months (October until May)" <sup><a href="#src-S73">S73</a></sup>, with daily deployment status posted on social media [unverified on re-read].</p>
+<p><b>The flags.</b> Four flags, checked against the organisation's own page and its flag graphics (the page's caption order is good, high alert, poor, spotted; the "high alert" graphic is the red flag and the "poor" graphic is the black one): green means "SPOTTING CONDITIONS ARE GOOD"; black means "SPOTTING CONDITIONS ARE POOR"; red means "HIGH SHARK ALERT!"; a white flag with a black shark means "A SHARK HAS BEEN SPOTTED, SIREN WILL SOUND LEAVE THE WATER IMMEDIATELY!". "NO FLAG = NO SPOTTER ON DUTY", and the service is advisory: "Shark Spotters is an advisory service and is not responsible for a person's safety. Use of the ocean is strictly at your own risk" <sup><a href="#src-S74">S74</a></sup>. After a sighting, "we suggest waiting an hour or so until the green or black flag is flown again" <sup><a href="#src-S73">S73</a></sup>.</p>
+<p><b>Where to check today's flags.</b> On the beach, from the flag and the spotter's signage; in the Shark Spotters app for Android and iOS, which the beach-status page points you to for up-to-date conditions at every monitored beach and which carries water temperature <sup><a href="#src-S75">S75</a>, <a href="#src-S64">S64</a></sup>; and on Shark Spotters' Twitter and Facebook, where sightings "are entered in real time" <sup><a href="#src-S76">S76</a></sup>.</p>
+<p><b>Shark sense.</b> "Most of our sightings occur during the summer months" (the first draft's "September to April" did not surface on re-reading the FAQ <span class="tag warn">unverified</span>); "on average you are most likely to encounter a white shark close to shore around the middle of the day"; "more than 70% of white shark sightings are behind the backline (where the waves start to break)"; and "during the winter months they can be found in high numbers around Seal Island in the middle of False Bay" <sup><a href="#src-S73">S73</a></sup>. The same FAQ notes that of bites, "a high percentage have been on spearfishers and surfers/bodyboarders" <sup><a href="#src-S73">S73</a></sup>.</p>
+<p><b>Rip currents.</b> The NSRI's own page says rips "claim the lives of many people each year"; the figure of about 56 drownings a year reported in the local press <sup><a href="#src-S77">S77</a></sup> was not re-checked <span class="tag warn">unverified</span>. How to spot one: "Water through a surf zone that is a different colour to the surrounding water", "a change in the incoming pattern of waves (often the waves are not breaking in a rip channel)", "seaweed, sand 'clouds' or debris moving out to the backline where waves are forming", and "turbulent or choppy water in the surf zone in a channel or river like shape" <sup><a href="#src-S78">S78</a></sup>. A rip "often looks like the calmest spot on the beach" <sup><a href="#src-S79">S79</a></sup>. If you are caught: "Do not panic. Stay calm and force yourself to relax", "swim at 90 degrees to the direction that you are being pulled and then use the waves to help you get back to the beach", and remember that "a rip current will not pull you under the water. So long as you can float you will be safe" <sup><a href="#src-S78">S78</a></sup>. Trying to swim straight back to the beach "won't work. The current is too strong, and you will exhaust yourself" <sup><a href="#src-S79">S79</a></sup>. NSRI emergency line 087 094 9774, or 112 from a cellphone <sup><a href="#src-S78">S78</a></sup>. A surfboard is flotation; staying on it and paddling across the rip is the surfer's version of the same advice [a note, not from a source]. Cape spots whose own guides warn of rips: Big Bay, Witsands, Scarborough, Outer Kom and Still Bay <sup><a href="#src-S35">S35</a>, <a href="#src-S25">S25</a>, <a href="#src-S27">S27</a>, <a href="#src-S24">S24</a>, <a href="#src-S32">S32</a></sup>.</p>
+<p><b>Cold water.</b> Water below 15°C is defined as cold water, which covers the Atlantic side for most of the year. Sudden immersion triggers an involuntary gasp, then rapid uncontrolled breathing, plus a jump in heart rate and blood pressure that "can strain the heart and cause cardiac arrest". The shock passes in about one to two minutes; the advice is to float on your back until your breathing settles rather than swim <sup><a href="#src-S80">S80</a></sup>. Below about 15°C the ability to hold your breath "decreases from the normal 60–90 seconds to just a few seconds" and the cold shock response lasts less than five minutes <sup><a href="#src-S81">S81</a></sup>. For a surfer that means two things: a hold-down in 10°C water is far shorter than you can normally manage, and a leash snap and long swim in winter can become a hypothermia problem.</p>
+<p><b>Big-wave hazards.</b> Dungeons sits "half a mile (one kilometer)" off Hout Bay under the Sentinel and is reached by boat or jet ski, about 15 minutes from Hout Bay harbour. The page's size language is "triple overhead plus", with 25-foot waves holding surfers under; the first draft's "averages 15 to 30 ft and has been ridden at around 60 ft" did not surface on re-reading <span class="tag warn">unverified</span>. The listed hazards are cold water (14.6 to 17.7°C), "thick, undulating kelp beds", "a few local sharks that prey on the seal colony", rocks, currents and long hold-downs; it wants west to south-west groundswell at 15 to 19 s, a "light northern to northwest-northeast breeze" and a low to medium tide, in the April to September window with May to August the peak <sup><a href="#src-S8">S8</a></sup>. Zigzag adds that the paddle-out from the mountain path goes "through Shark Alley", which is "teeming with tasty seals and seal pups", that you cannot tow when anyone is paddling, and that the wave is "not for the average surfer" <sup><a href="#src-S82">S82</a></sup>. Sunset Reef off Kommetjie holds "well and truly over 30 feet" with "no shortage of big sharks" nearby <sup><a href="#src-S66">S66</a></sup>. Even the everyday spots bite at size: Long Beach's shore break "can get heavy on big swells, so it's smart to kick out before reaching the inside" <sup><a href="#src-S31">S31</a></sup>.</p>
+</div>
+</details>
+<details>
+<summary>Reading a forecast: a short glossary</summary>
+<div class="body">
+<p><b>Significant wave height versus face height.</b> Significant wave height is "the mean wave height of the highest third of the waves" <sup><a href="#src-S83">S83</a></sup>; Wavescape uses the same definition and notes that it is what the models show as the primary swell <sup><a href="#src-S6">S6</a></sup>. Individual waves run bigger: with a 10 m significant height, one wave in ten exceeds 10.7 m, one in a hundred exceeds 15.1 m and one in a thousand exceeds 18.6 m, so "one might encounter a wave that is roughly double the significant wave height" <sup><a href="#src-S83">S83</a></sup> (those three figures match the Rayleigh distribution, so they were checked arithmetically rather than by re-opening the page). On top of that, a swell "gains substantial additional height" as it stands up over a bank, so the face you ride is bigger again than the offshore number <sup><a href="#src-S40">S40</a></sup>. Rule of thumb: the forecast height is the open-ocean average of the bigger waves; the biggest set of the session will be close to double it <sup><a href="#src-S40">S40</a>, <a href="#src-S83">S83</a></sup>.</p>
+<p><b>Swell period, and why 14 s beats 8 s.</b> Period is the seconds between successive waves <sup><a href="#src-S84">S84</a></sup>. Carve's bands: 6 to 8 s is windswell, local and disorganised; 10 to 12 s is mixed and workable; 15 s and up is groundswell, distant, organised and powerful. "Double the period and you roughly double the power at the same height", which makes period "the most useful figure on the entire forecast" <sup><a href="#src-S40">S40</a></sup>. Longer-period waves also travel faster and sort themselves into clean lines on the way in <sup><a href="#src-S4">S4</a></sup>, and they "wrap into a spot" more effectively, so a 14 s swell will bend around headlands and into sheltered corners that an 8 s swell cannot reach <sup><a href="#src-S84">S84</a></sup>. An 8 s, 2 m forecast is a summer south-easter sea on the Atlantic side, lumpy and short; a 14 s, 2 m forecast is a Southern Ocean groundswell with real push.</p>
+<p><b>Groundswell versus windswell.</b> Groundswell: waves "generated far off of the coast", long period, better-quality breaking waves. Windswell: waves "formed from local winds to the specific surf spot", short period, usually smaller and choppier <sup><a href="#src-S84">S84</a></sup>. In Cape Town the south-easter's windswell is the local example, and the models will sometimes headline it over a smaller but better groundswell <sup><a href="#src-S6">S6</a></sup>.</p>
+<p><b>Primary versus secondary swell.</b> Forecast charts list several swell trains at once, but the headline number is the primary. Wavescape: "The models give credence to the primary swell... WW3 outputs secondary swell data but few take notice", so "always check for the existence of other swells in the ocean" <sup><a href="#src-S6">S6</a></sup>. Carve's warning is that "a modest primary can be sitting on top of a second, shorter-period sea" from another angle, and the two interact into something messier than the chart suggests <sup><a href="#src-S40">S40</a></sup>.</p>
+<p><b>Direction convention: from.</b> Swell direction is "the direction from which the swell is coming", in compass degrees <sup><a href="#src-S84">S84</a></sup>. A 290° swell comes from the west-north-west; a 225° swell is a south-wester, the Cape's bread and butter <sup><a href="#src-S40">S40</a>, <a href="#src-S1">S1</a></sup>. Wind is quoted the same way: a south-easter blows from the south-east.</p>
+<p><b>Offshore, onshore, cross-shore.</b> Offshore wind blows from the land out to sea; it "holds the face up, grooms it clean" <sup><a href="#src-S40">S40</a>, <a href="#src-S84">S84</a></sup>. Onshore blows from the sea onto the land and "pushes waves over before they have organised themselves" and shreds the surface into chop. Cross-shore blows along the beach and is fine when light, bad when strong. Thresholds: under 8 knots direction barely matters; 8 to 15 knots it matters a lot; "above 15 knots onshore, the sensible move is to stay in bed" <sup><a href="#src-S40">S40</a></sup>. On the Peninsula the same wind is offshore on one coast and onshore on the other: the south-easter is onshore along much of False Bay and offshore or sheltered on parts of the Atlantic side, and a north-wester does the opposite <sup><a href="#src-S18">S18</a></sup>.</p>
+<p><b>Models.</b> The wave charts you read are built from two models: GFS forecasts the storms and hands its wind field to WW3, which turns wind into waves, and WW3's accuracy "is dramatically curtailed the longer the forecast period" <sup><a href="#src-S6">S6</a></sup>; Carve says the same about anything past 72 hours <sup><a href="#src-S40">S40</a></sup>. Trust the five-day picture for timing, the two-day picture for size, and the dawn check for everything else.</p>
+</div>
+</details>
+<details id="sources">
+<summary>Sources</summary>
+<div class="body">
+<ul class="sources-list"><li>All URLs below were opened during research on 12 October 2026. Where a page was fetched as a file and parsed locally, that is noted. Sources re-opened in the fact-check pass the same day, and whose quotations above were checked against the page: S2, S8, S9, S12, S16, S17, S18, S19, S23, S24, S30, S34, S35, S36, S37, S38, S41, S42, S45, S46, S47, S49, S50, S51, S56, S62, S63, S67, S70, S71, S73, S74, S78, S85, S86, S87.</li>
+<li id="src-S1"><b>S1</b> CSIR, Rossouw, Coetzee and Visser, "A South African Wave Climate Study", ICCE 1982 (PDF, downloaded and parsed): https://icce-ojs-tamu.tdl.org/icce/index.php/icce/article/download/3618/3300/</li>
+<li id="src-S2"><b>S2</b> Wikipedia, Roaring Forties: https://en.wikipedia.org/wiki/Roaring_Forties</li>
+<li id="src-S3"><b>S3</b> Kommetjie Residents and Ratepayers Association, Surfing (HTML downloaded and parsed): https://www.kommetjie.org/surfing</li>
+<li id="src-S4"><b>S4</b> SAEON eNews, one-in-20-year summer swell and Southern Ocean cyclones: https://enews.saeon.ac.za/?p=7080</li>
+<li id="src-S5"><b>S5</b> Garden Route District Municipality, SAWS weekly forecast with wind and swell wording: https://gardenroute.gov.za/?p=16093</li>
+<li id="src-S6"><b>S6</b> Wavescape, How to Read the Charts: https://www.wavescape.co.za/surf/how-to-read-the-charts</li>
+<li id="src-S7"><b>S7</b> Wavescape, Classic 22 second swell looms: https://www.wavescape.co.za/archive/classic-22-second-swell-looms</li>
+<li id="src-S8"><b>S8</b> Surfertoday, Dungeons: https://www.surfertoday.com/surfing/dungeons-the-wild-and-ruthless-south-african-wave</li>
+<li id="src-S9"><b>S9</b> Wikipedia, Cut-off low: https://en.wikipedia.org/wiki/Cut-off_low</li>
+<li id="src-S10"><b>S10</b> SAnews (SAWS), cut-off low definition and 5 to 7 m waves: https://www.sanews.gov.za/node/81148</li>
+<li id="src-S11"><b>S11</b> SAnews (SAWS), cut-off low with 4.5 to 5.5 m waves: https://www.sanews.gov.za/south-africa/cut-low-bring-cold-wet-and-windy-conditions-possible-severe-thunderstorms</li>
+<li id="src-S12"><b>S12</b> The Conversation, "Cape of Storms": https://theconversation.com/cape-of-storms-climate-researchers-explain-cape-towns-recent-extreme-weather-229012</li>
+<li id="src-S13"><b>S13</b> Surf-forecast, Llandudno winter swell statistics graph (image downloaded and read): https://www.surf-forecast.com/graphs/statistics/Llandudno.surf.statistics.winter.gif</li>
+<li id="src-S14"><b>S14</b> Surf-forecast, Llandudno summer swell statistics graph (image downloaded and read): https://www.surf-forecast.com/graphs/statistics/Llandudno.surf.statistics.summer.gif</li>
+<li id="src-S15"><b>S15</b> Surf Simply, Departure Gate Cape Town: https://surfsimply.com/travel/departure-gate-cape-town-south-africa/</li>
+<li id="src-S16"><b>S16</b> EUMeTrain, South African cold fronts, meteorological background: https://resources.eumetrain.org/satmanu/CM4SH/SACF/navmenu.php?page=2.0.0</li>
+<li id="src-S17"><b>S17</b> EUMeTrain, South African cold fronts, key parameters: https://resources.eumetrain.org/satmanu/CM4SH/SACF/navmenu.php?page=3.0.0</li>
+<li id="src-S18"><b>S18</b> Stoked Surf School, Surfing in Cape Town: https://stokedsurfschool.com/surfing-in-cape-town/</li>
+<li id="src-S19"><b>S19</b> Cape Town Tourism, top surf spots: https://capetown.travel/top-surf-spots-in-cape-town/</li>
+<li id="src-S20"><b>S20</b> Surf-forecast, Kalk Bay Reef: https://www.surf-forecast.com/breaks/Kalk-Bay-Reef</li>
+<li id="src-S21"><b>S21</b> Surf-forecast, Betty's Bay: https://www.surf-forecast.com/breaks/Bettys-Bay</li>
+<li id="src-S22"><b>S22</b> Surf-forecast, Onrus: https://www.surf-forecast.com/breaks/Onrus</li>
+<li id="src-S23"><b>S23</b> Surf-forecast, Victoria Bay: https://www.surf-forecast.com/breaks/Victoria-Bay</li>
+<li id="src-S24"><b>S24</b> Surf-forecast, Outer Kom: https://www.surf-forecast.com/breaks/Outer-Kom_1</li>
+<li id="src-S25"><b>S25</b> Surf-forecast, Witsands: https://www.surf-forecast.com/breaks/Witsands</li>
+<li id="src-S26"><b>S26</b> Surf-forecast, Misty Cliffs: https://www.surf-forecast.com/breaks/Misty-Cliffs</li>
+<li id="src-S27"><b>S27</b> Surf-forecast, Scarborough Beach: https://www.surf-forecast.com/breaks/Scarborough-Beach</li>
+<li id="src-S28"><b>S28</b> Wavescape, forecast page (August 2024 storm): https://www.wavescape.co.za/forecast/forecasts</li>
+<li id="src-S29"><b>S29</b> IOL, Western Cape severe weather, May 2025: https://iol.co.za/news/weather/2025-05-08-western-cape-prepares-for-severe-weather-gale-force-winds-and-high-seas-set-to-hit-on-friday/</li>
+<li id="src-S30"><b>S30</b> Surf-forecast, Long Beach (Kommetjie): https://www.surf-forecast.com/breaks/Long-Beach_2</li>
+<li id="src-S31"><b>S31</b> Mondo, Long Beach guide: https://www.mondo.surf/surf-spot/long-beach-3/guide/12159</li>
+<li id="src-S32"><b>S32</b> Wesgro, Surf the Garden Route: https://www.wesgro.co.za/travel/blog/surf-the-garden-route</li>
+<li id="src-S33"><b>S33</b> North Action Sports, The South Easterly Explained: https://northactionsports.com/blogs/all/the-south-easterly-explained</li>
+<li id="src-S34"><b>S34</b> Mondo, Llandudno guide: https://www.mondo.surf/surf-spot/llandudno/guide/12158</li>
+<li id="src-S35"><b>S35</b> Surf-forecast, Big Bay: https://www.surf-forecast.com/breaks/Big-Bay</li>
+<li id="src-S36"><b>S36</b> Surf-forecast, The Point (Elands Bay): https://www.surf-forecast.com/breaks/The-Point_3</li>
+<li id="src-S37"><b>S37</b> Mondo, Caves (Kogel Bay) guide: https://www.mondo.surf/surf-spot/caves-3/guide/12154</li>
+<li id="src-S38"><b>S38</b> Wikipedia, Cape Doctor: https://en.wikipedia.org/wiki/Cape_Doctor</li>
+<li id="src-S39"><b>S39</b> Progression, Tips for kitesurfing in Blouberg: https://progression.me/blog/tips-for-kitesurfing-in-blouberg-cape-town/</li>
+<li id="src-S40"><b>S40</b> Carve Magazine, How to read a surf forecast: https://www.carvemag.com/2026/09/how-to-read-a-surf-forecast/</li>
+<li id="src-S41"><b>S41</b> Wikipedia, Benguela Current: https://en.wikipedia.org/wiki/Benguela_Current</li>
+<li id="src-S42"><b>S42</b> NOAA COPEPOD, Southern Benguela, Cape Peninsula cell: https://st.nmfs.noaa.gov/copepod/time-series/za-30101/html/subtext.html</li>
+<li id="src-S43"><b>S43</b> UCT OpenUCT, Wind shear and differential upwelling along the south-western tip of Africa: https://open.uct.ac.za/items/f9081a4f-a35e-4386-b3f4-50f677ffa9e5</li>
+<li id="src-S44"><b>S44</b> Save Our Seas Foundation, What is upwelling: https://saveourseas.com/sosf-shark-education-centre/what-is-upwelling/</li>
+<li id="src-S45"><b>S45</b> Surf-forecast, Llandudno sea temperature and wetsuit guide: https://www.surf-forecast.com/breaks/Llandudno/seatemp</li>
+<li id="src-S46"><b>S46</b> Wikipedia, Beaches of Cape Town: https://en.wikipedia.org/wiki/Beaches_of_Cape_Town</li>
+<li id="src-S47"><b>S47</b> Seatemperature.net, Muizenberg in January: https://seatemperature.net/monthly/muizenberg-sea-temperature-in-january-8724</li>
+<li id="src-S48"><b>S48</b> Seatemperature.net, Muizenberg in August: https://seatemperature.net/monthly/muizenberg-sea-temperature-in-august-8724</li>
+<li id="src-S49"><b>S49</b> Surf-forecast, Kalk Bay Reef sea temperature and wetsuit guide: https://www.surf-forecast.com/breaks/Kalk-Bay-Reef/seatemp</li>
+<li id="src-S50"><b>S50</b> Seatemperature.info, Cape Town monthly: https://seatemperature.info/cape-town-water-temperature.html</li>
+<li id="src-S51"><b>S51</b> Seatemperature.info, Kommetjie monthly: https://seatemperature.info/kommetjie-water-temperature.html</li>
+<li id="src-S52"><b>S52</b> Dictionary of South African English, black south-easter: https://dsae.co.za/entry/black-southeaster/e00811</li>
+<li id="src-S53"><b>S53</b> Table Mountain Fund, The berg wind: https://www.thetablemountainfund.org.za/the-berg-wind-our-proudly-south-african-wind/</li>
+<li id="src-S54"><b>S54</b> Dictionary of South African English, berg wind: https://dsae.co.za/entry/berg%20wind/e00707</li>
+<li id="src-S55"><b>S55</b> PreventionWeb, Berg winds in South Africa: https://www.preventionweb.net/news/berg-winds-south-africa-winter-weather-pattern-increases-wildfire-risks</li>
+<li id="src-S56"><b>S56</b> SA Navy Hydrographic Office, SAN HO-2 South African Tide Tables 2025, front matter (PDF downloaded and parsed; re-downloaded and re-parsed in the fact-check pass): https://www.sanho.co.za/tides/Forward%202025.pdf</li>
+<li id="src-S57"><b>S57</b> Wikipedia, Tide: https://en.wikipedia.org/wiki/Tide</li>
+<li id="src-S58"><b>S58</b> Tide-forecast, Cape Town tide times (October 2026) — superseded by the official table at S85: https://www.tide-forecast.com/tide/Cape-Town-South-Africa/tide-times</li>
+<li id="src-S59"><b>S59</b> Tides Today, Cape Town — superseded by S85: https://tides.today/en/%F0%9F%8C%8D/south-africa/western-cape/cape-town</li>
+<li id="src-S60"><b>S60</b> Tides Today, Simon's Town — superseded by S86: https://tides.today/en/%F0%9F%8C%8D/south-africa/western-cape/simon-s-town</li>
+<li id="src-S61"><b>S61</b> Tides Today, Mossel Bay — superseded by S87: https://tides.today/en/%F0%9F%8C%8D/south-africa/western-cape/mossel-bay</li>
+<li id="src-S62"><b>S62</b> Surfertoday, wetsuit thickness and water temperature chart: https://www.surfertoday.com/surfing/the-wetsuit-thickness-and-water-temperature-chart</li>
+<li id="src-S63"><b>S63</b> Rip Curl Australia, wetsuit thickness guide: https://www.ripcurl.com.au/blogs/products/wetsuit-thickness-guide</li>
+<li id="src-S64"><b>S64</b> Shark Spotters, new Shark Spotters app: https://sharkspotters.org.za/new-shark-spotters-app/</li>
+<li id="src-S65"><b>S65</b> Surf-forecast, Llandudno surf stats page: https://www.surf-forecast.com/breaks/Llandudno/surf-stats</li>
+<li id="src-S66"><b>S66</b> Southern Man, Best big waves in South Africa: https://www.southernman.com.au/blog/best-big-waves-in-south-africa/</li>
+<li id="src-S67"><b>S67</b> Surf-forecast, Muizenberg: https://www.surf-forecast.com/breaks/Muizenberg</li>
+<li id="src-S68"><b>S68</b> Surf-forecast, Bloubergstrand: https://www.surf-forecast.com/breaks/Bloubergstrand</li>
+<li id="src-S69"><b>S69</b> Sani, Best surfing spots on the Western Cape coast: https://sani.co.za/blog/best-surfing-spots-on-the-western-cape-coast/</li>
+<li id="src-S70"><b>S70</b> Shark Spotters, locations: https://sharkspotters.org.za/safety/spotting/location/</li>
+<li id="src-S71"><b>S71</b> City of Cape Town, Shark Spotters programme: https://www.capetown.gov.za/City-Connect/Activities-and-programmes/Nature-and-environment/shark-spotters-programme</li>
+<li id="src-S72"><b>S72</b> Shark Spotters, What is Shark Spotters: https://sharkspotters.org.za/?p=1131</li>
+<li id="src-S73"><b>S73</b> Shark Spotters, safety FAQ: https://sharkspotters.org.za/education/faq/safety/</li>
+<li id="src-S74"><b>S74</b> Shark Spotters, flag system (HTML and the flag graphics downloaded; in the fact-check pass the raw HTML caption order was read and graphics 2 and 3 were viewed directly: red carries "HIGH SHARK ALERT!", black carries "SPOTTING CONDITIONS ARE POOR"): https://sharkspotters.org.za/safety/spotting/flag-system/</li>
+<li id="src-S75"><b>S75</b> Shark Spotters, beach status: https://sharkspotters.org.za/home/beach-status/</li>
+<li id="src-S76"><b>S76</b> Shark Spotters, shark sightings: https://sharkspotters.org.za/safety/shark-sightings/</li>
+<li id="src-S77"><b>S77</b> CapeTowner (NSRI), Don't become a rip current casualty: https://capetowner.co.za/2024-12-18-don-t-become-a-rip-current-casualty/</li>
+<li id="src-S78"><b>S78</b> NSRI, All about rip currents: https://www.nsri.org.za/water-safety/all-about-rip-currents</li>
+<li id="src-S79"><b>S79</b> NSRI, Understanding the hidden dangers of rip currents: https://www.nsri.org.za/2026/01/understanding-the-hidden-dangers-of-rip-currents/</li>
+<li id="src-S80"><b>S80</b> National Fire Chiefs Council, Cold water shock: https://nfcc.org.uk/?p=15829</li>
+<li id="src-S81"><b>S81</b> Wikipedia, Cold shock response: https://en.wikipedia.org/wiki/Cold_shock_response</li>
+<li id="src-S82"><b>S82</b> Zigzag, Dungeons Reef spot check: https://zigzag.co.za/dungeons-reef-cape-town-spot-check-pid1727/</li>
+<li id="src-S83"><b>S83</b> Wikipedia, Significant wave height: https://en.wikipedia.org/wiki/Significant_wave_height</li>
+<li id="src-S84"><b>S84</b> Wikipedia, Surf forecasting: https://en.wikipedia.org/wiki/Surf_forecasting</li>
+<li id="src-S85"><b>S85</b> SA Navy Hydrographic Office, Cape Town tide table, October 2026 (PDF downloaded and parsed in the fact-check pass): https://sanho.co.za/2026/capetown/GB202610.pdf</li>
+<li id="src-S86"><b>S86</b> SA Navy Hydrographic Office, Simon's Town tide table, October 2026 (PDF downloaded and parsed in the fact-check pass): https://sanho.co.za/2026/simonstown/SB202610.pdf</li>
+<li id="src-S87"><b>S87</b> SA Navy Hydrographic Office, Mossel Bay tide table, October 2026 (PDF downloaded and parsed in the fact-check pass): https://sanho.co.za/2026/mosselbay/MB202610.pdf</li>
+<li>Also opened, supporting only: Shark Spotters spotting overview https://sharkspotters.org.za/safety/spotting/ ; Time Out Cape Town Christmas forecast (high-pressure ridges driving the south-easter) https://www.timeout.com/cape-town/news/cape-towns-christmas-day-weather-forecast-is-in-121925 ; IOL June 2025 cold front https://iol.co.za/news/weather/2025-06-23-intense-cold-front-to-hit-cape-town-this-week/ ; Zigzag, How to read a swell chart https://zigzag.co.za/how-to-read-a-swell-chart-pid93141/ ; Ocean Rhythm chart datum page http://www.satides.co.za/chartDatum.html ; Mossel Bay wave buoy summary https://wavenet.csir.co.za/mbay/sum.html ; CSIR Wavenet home https://wavenet.csir.co.za/ ; Surf-forecast Elands Bay stats https://www.surf-forecast.com/breaks/The-Point_3/surf-stats ; Surf-forecast Muizenberg seasonal graphs https://www.surf-forecast.com/graphs/statistics/Muizenberg.surf.statistics.winter.gif and https://www.surf-forecast.com/graphs/statistics/Muizenberg.surf.statistics.summer.gif ; Wikipedia South Atlantic High https://en.wikipedia.org/wiki/South_Atlantic_High ; Hinwood et al., Southern Ocean swell (ICCE PDF) https://icce-ojs-tamu.tdl.org/icce/article/download/3629/3312/15402 ; Rip Curl US guide (Fahrenheit) https://www.ripcurl.com/us/blog/wetsuit-thickness-guide.html ; Kite Kahunas Cape Town wind FAQ https://kitekahunas.com/faq2_about_wind_cape_town.html ; Wavescape "Cape Town groundhog" https://www.wavescape.co.za/ocean/the-cape-town-groundhog ; SAnews cut-off low June 2026 https://www.sanews.gov.za/node/81873 and https://www.sanews.gov.za/node/74475 ; UCT False Bay circulation thesis https://open.uct.ac.za/items/f30c8188-2a2d-4add-8c07-e486aab9bb52/full ; Crossref, OpenAlex and Semantic Scholar API records for the Cape Point wave record paper (DOI 10.1016/j.jmarsys.2019.103185) and the SAWS wave model paper (DOI 10.3390/jmse8100773), neither of which returned usable figures. In the fact-check pass, also opened: the SANHO site index https://www.sanho.co.za/Default.htm (to find the per-port 2026 tide PDFs; the front door is a meta-refresh and the port list is built by script, with Cape Town's port code "GB" and Simon's Town's "SB").</li>
+<li>Not reachable from this session (blocked or failed, so not cited): the MDPI wave-model paper full text, the ScienceDirect Cape Point wave record paper, the City of Cape Town beaches PDF, the RNLI cold-water page, the EUMETSAT Polarstern feature, the news24 cut-off low explainer, and the seatemperature.org Camps Bay pages. In the fact-check pass: the South African Weather Service site (weathersa.co.za) is a JavaScript application that returns an empty page to a plain fetch, its media-releases page returned a 502, and its certificate chain fails verification from this machine, so no SAWS page was opened directly and every SAWS quotation above still comes through the secondary pages at S5, S10, S11 and S29; Wavescape (S6) hung up twice on re-fetch.</li>
+<li>---</li></ul>
+</div>
+</details>
+
+<!--/EXPLAINER--></div>
+    <details>
+      <summary>How the rating works (and what it cannot know)</summary>
+      <div class="body">
+        <p>Every hour at every spot gets a score out of 10. Five factors multiply together: size, wind, period, tide and chop. Multiplying is deliberate. One bad factor sinks the hour, the way a perfect swell with a howling onshore is still junk. Scores are relative to each spot's own potential, the way the big forecast sites rate spots: a 7 at Muizenberg is a great Muizenberg day, not a bigger wave than a 6 at Outer Kom.</p>
+        <ul>
+          <li><b>Swell.</b> The model gives two swell trains. The page combines them by energy, each weighted by how well its direction fits the spot's window. A swell more than 30 degrees outside the window counts for almost nothing.</li>
+          <li><b>Period.</b> The model reports a mean period; surfers and the spot rules use peak period, so the page multiplies by 1.25 before anything else. Longer period means cleaner, more powerful waves. Each spot has a best period; beach breaks tolerate short-period windswell better than reefs and points.</li>
+          <li><b>Size.</b> A period-adjusted swell height (so 1 m at 16 s outranks 1 m at 8 s) is compared with the spot's working range. Too small loses points; too big loses points fast and raises a "too big" flag.</li>
+          <li><b>Wind.</b> Offshore (within the spot's tolerance) scores full to about 25 km/h, then drops hard: a 55 km/h south-easter is a kite day whatever the direction. Cross-shore loses points faster, onshore fastest. Under 6 km/h is glassy. Missing wind data costs 20% and is flagged.</li>
+          <li><b>Tide.</b> A modifier between 75% and 100%, from where the modelled sea level sits in its local range (two tidal cycles) and what the spot prefers. Spots that work on any tide sit at 95% so they do not get a free lead.</li>
+          <li><b>Chop.</b> Short local wind-sea costs 18% to 35%, but only when it is travelling into the break; a wind-sea blowing out to sea on an offshore wind is ignored.</li>
+          <li><b>Face height.</b> A breaker-height estimate: it grows with the swell height to the power 0.8 and the period to the power 0.4, then takes the spot's exposure. It is a guess at the wave face, not the model's "significant wave height".</li>
+          <li><b>Labels.</b> No surf means faces under half a metre. Poor under 3.5, Fair to 5.5, Good to 7.5, Very good to 9, Epic above that. Blown-out surf is Poor with a "blown out" flag, not "no surf".</li>
+          <li><b>Day rating.</b> The best daylight hour still to come. The "next good window" is the first run of two or more daylight hours at Good or better; if there is none, the best Fair run.</li>
+        </ul>
+        <h4>What it cannot know</h4>
+        <ul>
+          <li>Ocean cells are about 9 km across, so spots in the same bay share one swell reading. What separates them is their rules: swell window, offshore wind, size range, tide. Those rules were compiled from public spot guides (surf-forecast.com, Wannasurf, Surfline and Wavescape spot pages, OpenStreetMap for positions) and each spot shows its confidence level and sources. Low-confidence spots were set from the shape of the coast and nothing more.</li>
+          <li>Wind is the nearest sea-cell wind at 10 m. Local effects (the Hout Bay funnel, Kommetjie's afternoon sea breeze, Muizenberg's wrap) are not modelled.</li>
+          <li>The tide curve is modelled sea level, good for timing within about half an hour, not a replacement for the SA Navy tide tables.</li>
+          <li>Sandbanks, rips, crowds, kelp, sharks and your own ability are not in the numbers. The surf log is how the page learns: log your sessions and the forecast that went with them, and the constants above can be tuned to what actually worked.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <section class="log" id="logSec">
+    <div class="sec-head"><h2>Surf log</h2><p class="sub">Log your sessions. The page saves the forecast that went with each one, so over time you can see what actually worked for you. Stored only in this browser.</p></div>
+    <form class="log-form" id="logForm">
+      <label>Spot <select id="logSpot"></select></label>
+      <label>Date <input type="date" id="logDate"></label>
+      <label>Time <select id="logHour"></select></label>
+      <label>Rating
+        <select id="logStars"><option value="5">5 · epic</option><option value="4">4 · good</option><option value="3" selected>3 · fun</option><option value="2">2 · meh</option><option value="1">1 · bad call</option></select>
+      </label>
+      <label class="notes">Notes <input type="text" id="logNotes" placeholder="Board, crowd, who was there, what it did…" maxlength="240"></label>
+      <div><button class="btn primary" type="submit">Log session</button></div>
+    </form>
+    <div class="log-summary" id="logSummary" hidden></div>
+    <div class="log-list" id="logList"></div>
+    <div class="log-io">
+      <button class="btn small" type="button" id="logExport">Show as text (backup)</button>
+      <button class="btn small" type="button" id="logImport">Paste a backup</button>
+      <textarea id="logText" hidden aria-label="Surf log as text"></textarea>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p><b>Data:</b> Open-Meteo marine and weather forecasts (open-meteo.com, free, non-commercial). Waves come from the nearest ocean model cell to each spot, about 9 km across, so two spots in the same bay share a swell reading; the spot's own exposure and swell window turn that into a local estimate. Wind uses the nearest sea cell. The tide curve is the model's sea-level signal, good for timing, not a replacement for the SA Navy tide tables.</p>
+  <p><b>Ratings are a model, not a surf report.</b> Nobody has checked the beach. Rips, sharks, boats and crowds are not in the numbers. Check the Shark Spotters flags at spotted beaches and look before you paddle.</p>
+  <p>Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (CC BY 4.0). Map © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors.</p>
+  <p id="siteLinks"></p>
+  <p id="buildInfo"></p>
+</footer>
+
+<script id="snapshot" type="application/json">null</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script id="engine">
+/* ---------- Catalogue ---------- */
+/*SITE_START*/
+const SITE = { publicUrl: '', repoUrl: '', builtAt: '' };
+/*SITE_END*/
+/*SPOTS_START*/
+const SPOTS = [];
+/*SPOTS_END*/
+
+/* ---------- Engine: pure functions, no DOM ---------- */
+const CSC = (function () {
+  const DAYS = 9;
+  const REGIONS = [
+    { key: 'atlantic-seaboard', name: 'Atlantic Seaboard' },
+    { key: 'south-peninsula', name: 'South Peninsula' },
+    { key: 'false-bay', name: 'False Bay' },
+    { key: 'west-coast', name: 'West Coast' },
+    { key: 'overberg', name: 'Overberg' },
+    { key: 'garden-route', name: 'Garden Route' }
+  ];
+  const M_VARS = ['wind_wave_height','wind_wave_direction','swell_wave_height','swell_wave_direction','swell_wave_period','secondary_swell_wave_height','secondary_swell_wave_direction','secondary_swell_wave_period','sea_surface_temperature','sea_level_height_msl'];
+  const W_VARS = ['temperature_2m','precipitation_probability','weather_code','wind_speed_10m','wind_direction_10m','wind_gusts_10m','uv_index'];
+  const W_DAILY = ['sunrise','sunset'];
+  const W_CUR = [];
+  const EXPOSURE = { exposed: { thr: 1.0, face: 1.0 }, semi: { thr: 0.85, face: 0.9 }, sheltered: { thr: 0.65, face: 0.8 } };
+  const PERIOD_MEAN_TO_PEAK = 1.25; /* Open-Meteo's swell_wave_period is a mean period; surfers and the spot rules use peak period */
+  const LABELS = ['No surf', 'Poor', 'Fair', 'Good', 'Very good', 'Epic'];
+  const SKILL_RANK = { beginner: 0, intermediate: 1, advanced: 2, expert: 3 };
+
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  function interp(table, x) {
+    if (x <= table[0][0]) return table[0][1];
+    for (let i = 1; i < table.length; i++) {
+      if (x <= table[i][0]) { const [x0, y0] = table[i - 1], [x1, y1] = table[i]; return y0 + (y1 - y0) * (x - x0) / (x1 - x0); }
+    }
+    return table[table.length - 1][1];
+  }
+  function angDiff(a, b) { const d = Math.abs(((a - b) % 360 + 360) % 360); return d > 180 ? 360 - d : d; }
+  function inWindow(dir, min, max) { return min <= max ? (dir >= min && dir <= max) : (dir >= min || dir <= max); }
+  function dirFit(dir, spot) {
+    if (dir == null) return 0.5;
+    if (inWindow(dir, spot.swell_dir_min, spot.swell_dir_max)) return 1;
+    const d = Math.min(angDiff(dir, spot.swell_dir_min), angDiff(dir, spot.swell_dir_max));
+    return clamp(1 - d / 30, 0, 1);
+  }
+  const C16 = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  const compass16 = d => d == null ? '–' : C16[Math.round((((d % 360) + 360) % 360) / 22.5) % 16];
+  const C8 = ['N','NE','E','SE','S','SW','W','NW'];
+  const compass8 = d => d == null ? '–' : C8[Math.round((((d % 360) + 360) % 360) / 45) % 8];
+
+  function ratingStep(score, face) { if (score == null) return 0; if (score < 1.5) return (face != null && face >= 0.5) ? 1 : 0; if (score < 3.5) return 1; if (score < 5.5) return 2; if (score < 7.5) return 3; if (score < 9) return 4; return 5; }
+  const ratingLabel = (score, face) => LABELS[ratingStep(score, face)];
+
+  function wetsuit(sst, air, wind) {
+    if (sst == null) return { short: '–', long: 'No water temperature yet' };
+    let t = sst; if (air != null && air < 12) t -= 1; if (wind != null && wind > 25) t -= 1;
+    if (t >= 20) return { short: 'boardies', long: 'Boardshorts or a springsuit' };
+    if (t >= 17) return { short: 'spring / 3/2', long: 'A 2 mm spring or a 3/2 full suit' };
+    if (t >= 14) return { short: '3/2', long: '3/2 full suit; booties for a long session' };
+    if (t >= 12) return { short: '4/3 + boots', long: '4/3 with booties' };
+    if (t >= 10) return { short: '4/3 + hood', long: '4/3 with booties and a hood' };
+    return { short: '5/4 + hood', long: '5/4 with hood and booties' };
+  }
+
+  const WIND_TABLE = {
+    offshore: [[0, 1], [12, 1], [25, 0.95], [35, 0.8], [45, 0.5], [55, 0.25], [70, 0.1], [90, 0.05]],
+    cross:    [[0, 1], [6, 0.95], [12, 0.8], [20, 0.62], [30, 0.45], [45, 0.28], [70, 0.12]],
+    onshore:  [[0, 1], [5, 0.9], [10, 0.68], [15, 0.48], [20, 0.32], [30, 0.16], [45, 0.06]]
+  };
+  const TIDE_PREF = {
+    low: f => 1 - f, 'low-mid': f => 1 - Math.abs(f - 0.3) / 0.7, mid: f => 1 - Math.abs(f - 0.5) * 2,
+    'mid-high': f => 1 - Math.abs(f - 0.7) / 0.7, high: f => f, all: () => 0.8
+  };
+
+  /* x: {h1,t1,d1,h2,t2,d2,hs,ww,ws,wd,sst,air,tideF} */
+  function rateHour(spot, x) {
+    if (x.h1 == null && x.h2 == null && x.hs == null) return { nodata: true, score: null, step: 0, label: 'No data', face: null, swell: null, rel: 'offshore', fit: 0, comp: { size: 0, wind: 0, period: 0, tide: 0, chop: 0 }, flags: [] };
+    const comps = [];
+    if (x.h1 != null && x.h1 > 0.05) comps.push({ h: x.h1, t: (x.t1 || 8) * PERIOD_MEAN_TO_PEAK, d: x.d1, which: 'primary' });
+    if (x.h2 != null && x.h2 > 0.15) comps.push({ h: x.h2, t: (x.t2 || 8) * PERIOD_MEAN_TO_PEAK, d: x.d2, which: 'secondary' });
+    if (!comps.length) {
+      return { score: 0, step: 0, label: LABELS[0], face: 0, swell: null, rel: 'offshore', fit: 0, comp: { size: 0, wind: 1, period: 0, tide: 1, chop: 1 }, flags: ['no swell'] };
+    }
+    /* combine the swell trains by energy, each weighted by how well its direction fits the spot */
+    comps.forEach(c => { c.fit = dirFit(c.d, spot); c.w = Math.pow(0.1 + 0.9 * c.fit, 2); c.e = c.h * c.h * c.w; });
+    comps.sort((a, b) => b.e - a.e);
+    const E = comps.reduce((a, c) => a + c.e, 0);
+    const hEff = Math.sqrt(E);
+    const T = comps.reduce((a, c) => a + c.e * c.t, 0) / E;
+    const sw = { h: comps[0].h, t: comps[0].t, d: comps[0].d, which: comps[0].which, fit: comps[0].fit, T };
+    const ex = EXPOSURE[spot.exposure] || EXPOSURE.semi;
+    const periodFactor = clamp(0.75 + 0.05 * T, 1.0, 1.6);
+    /* breaker height, Komar and Gaughan shape: grows with T^0.4 and H^0.8 */
+    const face = 0.62 * Math.pow(T, 0.4) * Math.pow(hEff, 0.8) * ex.face;
+    /* size is judged on a period-normalised height so 1 m at 16 s outranks 1 m at 8 s */
+    const hSize = hEff * periodFactor / 1.4;
+
+    const mn = spot.size_min_m * ex.thr, mx = spot.size_max_m * ex.thr;
+    let size, tooBig = false;
+    if (hSize < mn) size = 0.15 + 0.55 * Math.pow(hSize / mn, 2);
+    else if (hSize <= mx) { const f = (hSize - mn) / Math.max(mx - mn, 0.1); size = f < 0.25 ? 0.7 + 0.3 * (f / 0.25) : (f <= 0.8 ? 1 : 1 - 0.15 * ((f - 0.8) / 0.2)); }
+    else { size = Math.max(0.05, 0.85 - 2.5 * (hSize - mx) / mx); tooBig = true; }
+
+    const best = spot.best_period_s || 13;
+    const floor = spot.break_type === 'beach' ? 0.2 : 0.1;
+    let period = clamp((T - 6) / Math.max(best - 6, 4), 0, 1);
+    period = floor + (1 - floor) * period;
+
+    const tol = spot.wind_offshore_tolerance || 55;
+    const noWind = x.wd == null || x.ws == null;
+    const a = noWind ? 0 : angDiff(x.wd, spot.wind_offshore_dir);
+    const rel = a <= tol ? 'offshore' : (a <= tol + 40 ? 'cross' : 'onshore');
+    const ws = noWind ? 0 : x.ws;
+    const wind = noWind ? 0.8 : interp(WIND_TABLE[rel], ws);
+
+    const tide = x.tideF == null ? 0.95 : 0.75 + 0.25 * clamp((TIDE_PREF[spot.tide] || TIDE_PREF.all)(x.tideF), 0, 1);
+
+    /* wind-sea only hurts if it is travelling towards the break */
+    let chop = 1;
+    const wwToward = x.wwd == null ? rel !== 'offshore' : dirFit(x.wwd, spot) >= 0.5;
+    if (wwToward && x.ww != null && hEff > 0) { if (x.ww > hEff) chop = 0.65; else if (x.ww > 0.5 * hEff) chop = 0.82; }
+
+    const q = size * wind * (0.35 + 0.65 * period) * tide * chop;
+    const score = Math.round(clamp(10 * Math.pow(q, 0.8), 0, 10) * 10) / 10;
+    const flags = [];
+    if (tooBig) flags.push('too big');
+    if (hSize < mn * 0.6) flags.push('small');
+    if (rel === 'onshore' && ws >= 20) flags.push('blown out'); else if (rel === 'onshore' && ws >= 12) flags.push('onshore');
+    if (ws >= 35) flags.push('windy');
+    if (noWind) flags.push('no wind data');
+    if (chop < 1) flags.push('choppy');
+    if (sw.fit < 0.5) flags.push('wrong direction');
+    const faceR = Math.round(face * 10) / 10;
+    return { score, step: ratingStep(score, faceR), label: ratingLabel(score, faceR), face: faceR, swell: sw, rel, fit: sw.fit, hEff: Math.round(hEff * 100) / 100, hSize: Math.round(hSize * 100) / 100, comp: { size, wind, period, tide, chop }, flags };
+  }
+
+  function refineExtremum(a, b, c) { const den = a - 2 * b + c; return den === 0 ? 0 : clamp((a - c) / (2 * den), -0.5, 0.5); }
+
+  function analyse(spot, data, fromIdx) {
+    const S = data.spots[spot.id]; if (!S) return null;
+    const times = data.times, n = times.length;
+    const from = fromIdx || 0; const todayDate = times[from] ? times[from].slice(0, 10) : '';
+    const dayInfo = {};
+    (data.days || []).forEach((d, i) => {
+      const sr = S.d && S.d.sunrise ? S.d.sunrise[i] : null, ss = S.d && S.d.sunset ? S.d.sunset[i] : null;
+      const mins = str => +str.slice(11, 13) * 60 + +str.slice(14, 16);
+      dayInfo[d] = { sunrise: sr, sunset: ss, startH: sr ? Math.max(0, Math.round(mins(sr) / 60)) : 6, endH: ss ? Math.min(23, Math.round(mins(ss) / 60) - 1) : 18 };
+    });
+    const sl = S.m.sea_level_height_msl || [];
+    const WIN = 13; /* rolling +/-13 h window: about two tidal cycles, so the stage is right at both ends of the series */
+    const tideRange = times.map((t, i) => { let mn = Infinity, mx = -Infinity; for (let k = Math.max(0, i - WIN); k <= Math.min(n - 1, i + WIN); k++) { const v = sl[k]; if (v == null) continue; if (v < mn) mn = v; if (v > mx) mx = v; } return mx > mn ? { min: mn, max: mx } : null; });
+    const hours = [];
+    for (let i = 0; i < n; i++) {
+      const t = times[i], d = t.slice(0, 10), H = +t.slice(11, 13);
+      const di = dayInfo[d] || { startH: 5, endH: 19 };
+      const isLight = H >= di.startH && H <= di.endH;
+      const g = (arr) => (arr && arr[i] != null) ? arr[i] : null;
+      const x = { h1: g(S.m.swell_wave_height), t1: g(S.m.swell_wave_period), d1: g(S.m.swell_wave_direction), h2: g(S.m.secondary_swell_wave_height), t2: g(S.m.secondary_swell_wave_period), d2: g(S.m.secondary_swell_wave_direction), hs: g(S.m.wave_height), ww: g(S.m.wind_wave_height), wwd: g(S.m.wind_wave_direction), ws: g(S.w.wind_speed_10m), wd: g(S.w.wind_direction_10m), sst: g(S.m.sea_surface_temperature), air: g(S.w.temperature_2m) };
+      const tideH = g(sl); const td = tideRange[i];
+      x.tideF = (tideH != null && td && td.max > td.min) ? (tideH - td.min) / (td.max - td.min) : null;
+      const next = i < n - 1 ? sl[i + 1] : null;
+      const tideTrend = (tideH == null || next == null) ? null : (next > tideH ? 'rising' : 'falling');
+      const r = rateHour(spot, x);
+      hours.push(Object.assign({ i, t, d, H, isLight, ws: x.ws, wd: x.wd, wg: g(S.w.wind_gusts_10m), sst: x.sst, air: x.air, tideH, tideF: x.tideF, tideTrend, rain: g(S.w.precipitation_probability), code: g(S.w.weather_code), cloud: g(S.w.cloud_cover), uv: g(S.w.uv_index), hs: x.hs, ww: x.ww }, r));
+    }
+    const daily = (data.days || []).map((d, k) => {
+      const hs = hours.filter(h => h.d === d && h.isLight && !h.nodata && (d !== todayDate || h.i >= from));
+      let best = null; hs.forEach(h => { if (!best || h.score > best.score) best = h; });
+      const ssts = hs.map(h => h.sst).filter(v => v != null);
+      const dayOver = !best && d === todayDate && hours.some(h => h.d === d && h.isLight && !h.nodata);
+      return { d, k, best, score: best ? best.score : null, step: best ? ratingStep(best.score, best.face) : 0, label: best ? ratingLabel(best.score, best.face) : (dayOver ? 'Day done' : 'No data'), hours: hs, sunrise: dayInfo[d] ? dayInfo[d].sunrise : null, sunset: dayInfo[d] ? dayInfo[d].sunset : null, sst: ssts.length ? ssts.reduce((a, b) => a + b, 0) / ssts.length : null, lowConf: k >= 7 };
+    });
+    const tides = [];
+    for (let i = 1; i < n - 1; i++) {
+      const a = sl[i - 1], b = sl[i], c = sl[i + 1]; if (a == null || b == null || c == null) continue;
+      if ((b > a && b >= c) || (b < a && b <= c)) {
+        const off = refineExtremum(a, b, c); const H = +times[i].slice(11, 13) + off; const hh = Math.floor(H), mm = Math.round((H - hh) * 60);
+        const hh2 = mm === 60 ? hh + 1 : hh, mm2 = mm === 60 ? 0 : mm;
+        tides.push({ type: b > a ? 'high' : 'low', i, d: times[i].slice(0, 10), time: String(hh2).padStart(2, '0') + ':' + String(mm2).padStart(2, '0'), h: b });
+      }
+    }
+    return { spot, hours, daily, tides, grid: S.grid, cur: S.cur };
+  }
+
+  function nextWindow(an, fromIdx, minScore) {
+    const hs = an.hours; let i = Math.max(0, fromIdx);
+    while (i < hs.length) {
+      if (hs[i].isLight && hs[i].score >= minScore) {
+        let j = i, peak = hs[i];
+        while (j + 1 < hs.length && hs[j + 1].isLight && hs[j + 1].score >= minScore) { j++; if (hs[j].score > peak.score) peak = hs[j]; }
+        if (j > i || i === fromIdx) return { start: hs[i], end: hs[j], peak, hours: j - i + 1 };
+        i = j + 1; continue;
+      }
+      i++;
+    }
+    return null;
+  }
+
+  function sastParts(date) {
+    const p = new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Johannesburg', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(date || new Date());
+    const o = {}; p.forEach(x => { if (x.type !== 'literal') o[x.type] = x.value; });
+    if (o.hour === '24') o.hour = '00';
+    return { date: o.year + '-' + o.month + '-' + o.day, hour: +o.hour, minute: +o.minute, key: o.year + '-' + o.month + '-' + o.day + 'T' + o.hour + ':00' };
+  }
+
+  function buildUrls(spots, days) {
+    const out = []; const CH = 25;
+    for (let i = 0; i < spots.length; i += CH) {
+      const c = spots.slice(i, i + CH); const lat = c.map(s => s.lat).join(','), lon = c.map(s => s.lon).join(',');
+      out.push({
+        ids: c.map(s => s.id),
+        marine: 'https://marine-api.open-meteo.com/v1/marine?latitude=' + lat + '&longitude=' + lon + '&hourly=' + M_VARS.join(',') + '&timezone=Africa%2FJohannesburg&forecast_days=' + days,
+        weather: 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&hourly=' + W_VARS.join(',') + '&daily=' + W_DAILY.join(',') + '&timezone=Africa%2FJohannesburg&forecast_days=' + days + '&wind_speed_unit=kmh&cell_selection=sea'
+      });
+    }
+    return out;
+  }
+
+  /* raw: either {fetchedAt, ids, marine:[chunk responses], weather:[chunk responses]} straight from Open-Meteo,
+     or the compact form {v:2, fetchedAt, times, days, spots} that build.py writes to forecast.json */
+  function ingest(raw) {
+    if (raw && raw.v === 2) {
+      if (!Array.isArray(raw.times) || !raw.times.length || !raw.spots) throw new Error('bad forecast file');
+      return { fetchedAt: raw.fetchedAt, times: raw.times, days: raw.days || [], spots: raw.spots };
+    }
+    const flat = chunks => chunks.flatMap(c => Array.isArray(c) ? c : [c]);
+    const M = flat(raw.marine), W = flat(raw.weather);
+    if (M.length !== raw.ids.length || W.length !== raw.ids.length) throw new Error('location count mismatch: ' + M.length + '/' + W.length + ' vs ' + raw.ids.length);
+    const times = W[0].hourly.time.slice();
+    const spots = {};
+    raw.ids.forEach((id, i) => {
+      const m = M[i], w = W[i];
+      if (!m || !m.hourly || !w || !w.hourly) return;
+      const mi = new Map(m.hourly.time.map((t, k) => [t, k]));
+      const pick = arr => times.map(t => { const k = mi.get(t); return (k == null || !arr) ? null : arr[k]; });
+      const mh = {}; M_VARS.forEach(v => { mh[v] = pick(m.hourly[v]); });
+      spots[id] = { m: mh, w: w.hourly, d: w.daily || {}, cur: w.current || null, grid: { lat: m.latitude, lon: m.longitude }, wgrid: { lat: w.latitude, lon: w.longitude } };
+    });
+    return { fetchedAt: raw.fetchedAt, times, days: (W[0].daily && W[0].daily.time) ? W[0].daily.time.slice() : [], spots };
+  }
+
+  /* the same compact form, for the browser cache */
+  function pack(data) {
+    const spots = {};
+    Object.keys(data.spots).forEach(id => {
+      const S = data.spots[id], w = {}, d = {};
+      W_VARS.forEach(v => { if (S.w && S.w[v]) w[v] = S.w[v]; });
+      W_DAILY.forEach(v => { if (S.d && S.d[v]) d[v] = S.d[v]; });
+      spots[id] = { m: S.m, w, d, grid: S.grid };
+    });
+    return { v: 2, fetchedAt: data.fetchedAt, times: data.times, days: data.days, spots };
+  }
+
+  return { DAYS, REGIONS, M_VARS, W_VARS, W_DAILY, W_CUR, EXPOSURE, LABELS, SKILL_RANK, clamp, interp, angDiff, dirFit, compass16, compass8, ratingStep, ratingLabel, wetsuit, rateHour, analyse, nextWindow, sastParts, buildUrls, ingest, pack };
+})();
+if (typeof module !== 'undefined') { module.exports = { CSC, SPOTS }; }
+</script>
+<script id="app">
+(function () {
+  'use strict';
+  const CACHE_KEY = 'csc.cache.v3', FAV_KEY = 'csc.fav.v1', LOG_KEY = 'csc.log.v1', PREF_KEY = 'csc.pref.v1';
+  const FRESH_MIN = 210;   /* the site refreshes its forecast every 3 hours */
+  const OLD_MIN = 12 * 60;
+  const framed = (() => { try { return window.top !== window; } catch (e) { return true; } })();
+  const onWeb = /^https?:$/.test(location.protocol);
+  const $ = (sel, root) => (root || document).querySelector(sel);
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+  };
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const REGION_NAME = {}; CSC.REGIONS.forEach(r => { REGION_NAME[r.key] = r.name; });
+  const COAST_INDEX = {}; SPOTS.forEach((s, i) => { COAST_INDEX[s.id] = i; });
+
+  const state = {
+    data: null, source: 'none', analyses: {}, nowIdx: 0, focusIdx: 0, firstLight: false,
+    region: 'all', level: 'all', favOnly: false, sort: 'now', search: '',
+    units: store.get(PREF_KEY, { len: 'm', wind: 'kmh' }), favs: new Set(store.get(FAV_KEY, [])), expanded: new Set(),
+    map: null, markers: {}, tileFail: false
+  };
+
+  /* ---------- formatting ---------- */
+  const fmtLen = (m, dp, bare) => { if (m == null) return '–'; if (state.units.len === 'ft') { const f = m * 3.28084; return (dp === 0 ? Math.round(f) : f.toFixed(dp == null ? (f < 10 ? 1 : 0) : dp)) + (bare ? '' : ' ft'); } return m.toFixed(dp == null ? 1 : dp) + (bare ? '' : ' m'); };
+  const fmtWind = (k, bare) => { if (k == null) return '–'; return state.units.wind === 'kn' ? Math.round(k * 0.539957) + (bare ? '' : ' kn') : Math.round(k) + (bare ? '' : ' km/h'); };
+  const fmtTemp = t => t == null ? '–' : Math.round(t) + ' °C';
+  const fmtScore = s => s == null ? '–' : s.toFixed(1);
+  const unitsLabel = () => (state.units.len === 'm' ? 'm' : 'ft') + ' · ' + (state.units.wind === 'kmh' ? 'km/h' : 'kn');
+  function dayLabel(d, style) {
+    const dt = new Date(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10));
+    if (style === 'wd') return dt.toLocaleDateString('en-ZA', { weekday: 'short' });
+    if (style === 'short') return dt.toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric' });
+    if (style === 'long') return dt.toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'short' });
+    return dt.toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short' });
+  }
+  const hhmm = t => t ? t.slice(11, 16) : '–';
+  const arrowSvg = (dir, cls) => '<svg class="arrow ' + (cls || '') + '" viewBox="-6 -6 12 12" aria-hidden="true"><g transform="rotate(' + (((dir || 0) + 90) % 360) + ')"><path d="M-5,-3.2 L5,0 L-5,3.2 Z"/></g></svg>';
+  const WMO = { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'fog', 51: 'drizzle', 53: 'drizzle', 55: 'drizzle', 56: 'drizzle', 57: 'drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'rain', 67: 'rain', 71: 'snow', 73: 'snow', 75: 'snow', 77: 'snow', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm', 99: 'thunderstorm' };
+  const wmo = c => WMO[c] || '–';
+  const TIDE_TEXT = { low: 'low tide', 'low-mid': 'low to mid tide', mid: 'mid tide', 'mid-high': 'mid to high tide', high: 'high tide', all: 'any tide' };
+  const tideText = t => TIDE_TEXT[t] || t;
+  const skillText = s => ({ beginner: 'Beginner-friendly', intermediate: 'Intermediate', advanced: 'Advanced', expert: 'Expert / big wave' })[s] || s;
+  const windowText = s => CSC.compass16(s.swell_dir_min) + ' to ' + CSC.compass16(s.swell_dir_max) + ' (best ' + CSC.compass16(s.swell_dir_best) + ')';
+  const relWord = { offshore: 'offshore', cross: 'cross-shore', onshore: 'onshore' };
+
+  /* ---------- data ---------- */
+  function readSnapshot() { try { const el = document.getElementById('snapshot'); const v = JSON.parse(el.textContent || 'null'); return v && (v.ids || v.v === 2) ? v : null; } catch (e) { return null; } }
+  async function fetchSiteForecast() {
+    if (!onWeb) return null;
+    try { const r = await fetch('forecast.json', { cache: 'no-cache' }); if (!r.ok) return null; const j = await r.json(); return j && j.v === 2 && j.times && j.spots ? j : null; } catch (e) { return null; }
+  }
+  const isNewer = (a, b) => !!a && (!b || new Date(a.fetchedAt) > new Date(b.fetchedAt));
+  function saveCache(data) { store.set(CACHE_KEY, { data: CSC.pack(data) }); }
+  async function getJSON(url) { const r = await fetch(url, { cache: 'no-store' }); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }
+  async function fetchLive() {
+    const chunks = CSC.buildUrls(SPOTS, CSC.DAYS);
+    const marine = await Promise.all(chunks.map(c => getJSON(c.marine)));
+    const weather = await Promise.all(chunks.map(c => getJSON(c.weather)));
+    return { fetchedAt: new Date().toISOString(), ids: SPOTS.map(s => s.id), marine, weather };
+  }
+  function applyRaw(raw, source) {
+    const data = CSC.ingest(raw);
+    state.data = data; state.source = source;
+    const now = CSC.sastParts(); const times = data.times;
+    let idx = times.indexOf(now.key);
+    if (idx < 0) idx = now.key < times[0] ? 0 : times.length - 1;
+    state.nowIdx = idx; state.now = now;
+    state.analyses = {};
+    SPOTS.forEach(s => { const an = CSC.analyse(s, data, idx); if (an) state.analyses[s.id] = an; });
+    computeFocus();
+    renderAll();
+  }
+  function computeFocus() {
+    const idx = state.nowIdx;
+    const any = Object.values(state.analyses)[0];
+    let f = idx; state.firstLight = false;
+    if (any && !any.hours[idx].isLight) { let j = idx; while (j < any.hours.length && !any.hours[j].isLight) j++; if (j < any.hours.length) { f = j; state.firstLight = true; } }
+    state.focusIdx = f;
+  }
+  function ageMinutes(iso) { return Math.round((Date.now() - new Date(iso).getTime()) / 60000); }
+  function fmtStamp(iso) { try { return new Date(iso).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg', weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false }); } catch (e) { return iso; } }
+
+  async function load(force) {
+    const cache = store.get(CACHE_KEY, null);
+    const cached = cache && cache.data && cache.data.v === 2 ? cache.data : null;
+    const snap = readSnapshot();
+    if (!state.data) {
+      const first = cached && (!snap || isNewer(cached, snap)) ? cached : (snap || cached);
+      if (first) { try { applyRaw(first, first === snap ? 'snapshot' : 'cache'); } catch (e) { console.warn('initial render failed', e); } }
+    }
+    if (!force) {
+      setStatus('loading', 'Checking…');
+      const site = await fetchSiteForecast();
+      if (site && isNewer(site, state.data)) { try { applyRaw(site, 'site'); saveCache(state.data); } catch (e) { console.warn('site forecast failed', e); } }
+      if (state.data && ageMinutes(state.data.fetchedAt) < FRESH_MIN) { renderStatus(); return; }
+    }
+    setStatus('loading', 'Fetching the latest forecast…');
+    try {
+      const raw = await fetchLive();
+      applyRaw(raw, 'live');
+      saveCache(state.data);
+    } catch (err) {
+      console.warn('live fetch failed', err);
+      if (state.data) {
+        renderStatus();
+        const when = fmtStamp(state.data.fetchedAt) + ' SAST';
+        if (state.source === 'snapshot') notice('This copy shows the forecast saved on ' + when + '.' + (SITE.publicUrl ? ' For live forecasts open <a href="' + esc(SITE.publicUrl) + '" target="_blank" rel="noopener">' + esc(SITE.publicUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')) + '</a>.' : ''), 'warn');
+        else if (ageMinutes(state.data.fetchedAt) >= FRESH_MIN) notice('Could not reach the forecast service, so this is the forecast from ' + when + '. Press Refresh to try again.', 'warn');
+      } else {
+        setStatus('error', 'No data');
+        notice('Could not load the forecast: ' + esc(err.message) + '. Check your connection and press Refresh.', 'err');
+        $('#leadNow').innerHTML = '<div class="empty">No forecast loaded.</div>';
+      }
+    }
+  }
+
+  /* ---------- status ---------- */
+  function setStatus(src, text) { const p = $('#srcPill'); p.dataset.src = src; p.textContent = text; }
+  function notice(msg, kind) { const n = $('#notice'); n.hidden = !msg; n.className = 'notice' + (kind === 'err' ? ' err' : kind === 'info' ? ' info' : ''); n.innerHTML = msg || ''; }
+  function renderStatus() {
+    $('#unitsBtn').textContent = unitsLabel();
+    if (!state.data) return;
+    const age = ageMinutes(state.data.fetchedAt);
+    if (age < FRESH_MIN) setStatus('live', 'Up to date');
+    else if (age < OLD_MIN) setStatus('cache', 'A few hours old');
+    else setStatus('snapshot', 'Old forecast');
+    $('#updatedAt').textContent = 'Updated ' + fmtStamp(state.data.fetchedAt);
+    if (age < FRESH_MIN && state.source !== 'snapshot') notice('');
+  }
+
+  /* ---------- filtering ---------- */
+  function visibleSpots() {
+    const q = state.search.trim().toLowerCase();
+    let list = SPOTS.filter(s => state.analyses[s.id]);
+    if (state.region !== 'all') list = list.filter(s => s.region === state.region);
+    if (state.level !== 'all') { const max = CSC.SKILL_RANK[state.level]; list = list.filter(s => (CSC.SKILL_RANK[s.skill] == null ? 1 : CSC.SKILL_RANK[s.skill]) <= max); }
+    if (state.favOnly) list = list.filter(s => state.favs.has(s.id));
+    if (q) list = list.filter(s => (s.name + ' ' + (s.aka || []).join(' ') + ' ' + (s.area || '') + ' ' + REGION_NAME[s.region]).toLowerCase().includes(q));
+    const f = state.focusIdx;
+    const weekBest = id => Math.max(0, ...state.analyses[id].daily.slice(0, 7).map(d => d.score || 0));
+    if (state.sort === 'now') list.sort((a, b) => (state.analyses[b.id].hours[f].score || 0) - (state.analyses[a.id].hours[f].score || 0) || a.name.localeCompare(b.name));
+    else if (state.sort === 'week') list.sort((a, b) => weekBest(b.id) - weekBest(a.id) || a.name.localeCompare(b.name));
+    else if (state.sort === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
+    else list.sort((a, b) => COAST_INDEX[a.id] - COAST_INDEX[b.id]);
+    return list;
+  }
+
+  /* ---------- rendering ---------- */
+  function renderAll() {
+    renderStatus(); renderFilters(); renderLead(); renderCards(); renderPlanner(); renderMap(); renderLegend(); renderLogControls(); renderLog();
+    const bi = $('#buildInfo'); if (bi) bi.textContent = SPOTS.length + ' spots · ' + CSC.DAYS + '-day forecast, refreshed every 3 hours · times in SAST · ratings worked out in your browser from the raw forecast.';
+    const sl = $('#siteLinks'); if (sl) sl.innerHTML = (SITE.publicUrl ? 'Page address: <a href="' + esc(SITE.publicUrl) + '">' + esc(SITE.publicUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')) + '</a>. ' : '') + (SITE.repoUrl ? 'Spot rules and code: <a href="' + esc(SITE.repoUrl) + '" target="_blank" rel="noopener">' + esc(SITE.repoUrl.replace(/^https?:\/\//, '')) + '</a>.' : '');
+    if (location.hash && location.hash.startsWith('#spot-')) openSpot(location.hash.slice(6), false);
+  }
+
+  function renderFilters() {
+    const c = $('#regionChips');
+    const all = [{ key: 'all', name: 'All of the Western Cape' }].concat(CSC.REGIONS.filter(r => SPOTS.some(s => s.region === r.key)));
+    c.innerHTML = all.map(r => '<button class="chip" type="button" data-region="' + r.key + '" aria-pressed="' + (state.region === r.key) + '">' + esc(r.name) + '</button>').join('');
+    $('#favBtn').setAttribute('aria-pressed', String(state.favOnly));
+    $('#levelSel').value = state.level; $('#sortSel').value = state.sort;
+  }
+
+  function scoreTile(h) { return '<div class="score-tile s' + h.step + '"><span class="n num">' + fmtScore(h.score) + '</span><span class="l">' + esc(h.label) + '</span></div>'; }
+  function mainLine(h) {
+    if (!h.swell) return 'No swell in the model.';
+    return fmtLen(h.face) + ' faces · ' + CSC.compass16(h.swell.d) + ' ' + fmtLen(h.swell.h) + ' @ ' + Math.round(h.swell.t) + ' s · ' + CSC.compass16(h.wd) + ' ' + fmtWind(h.ws) + ' ' + relWord[h.rel] + ' · ' + fmtTemp(h.sst);
+  }
+
+  function renderLead() {
+    const list = visibleSpots(); const f = state.focusIdx;
+    const sub = $('#nowSub');
+    const any = Object.values(state.analyses)[0];
+    const focusHour = any ? any.hours[f] : null;
+    sub.textContent = state.firstLight && focusHour
+      ? ('Dark now (' + state.now.key.slice(11) + ' SAST). Showing first light: ' + dayLabel(focusHour.d, 'short') + ' ' + String(focusHour.H).padStart(2, '0') + ':00.')
+      : (focusHour ? (dayLabel(focusHour.d, 'long') + ', ' + String(focusHour.H).padStart(2, '0') + ':00 SAST') : '');
+    const ranked = list.map(s => ({ s, h: state.analyses[s.id].hours[f] })).filter(r => !r.h.nodata).sort((a, b) => (b.h.score || 0) - (a.h.score || 0)).slice(0, 3);
+    const lead = $('#leadNow');
+    if (!ranked.length) { lead.innerHTML = '<div class="empty">No spots match the filters.</div>'; }
+    else lead.innerHTML = ranked.map((r, i) => '<article class="lead-card">' + scoreTile(r.h) + '<div class="lead-body"><span class="lead-rank">#' + (i + 1) + (state.region === 'all' ? '' : ' in ' + esc(REGION_NAME[r.s.region])) + '</span><h3>' + esc(r.s.name) + '</h3><span class="where">' + esc(r.s.area) + ' · ' + esc(REGION_NAME[r.s.region]) + '</span><span class="line">' + esc(mainLine(r.h)) + '</span>' + (r.h.flags.length ? '<span class="line">' + r.h.flags.map(x => '<span class="tag ' + (x === 'too big' || x === 'onshore' ? 'bad' : 'warn') + '">' + esc(x) + '</span>').join(' ') + '</span>' : '') + '<button class="link" type="button" data-goto="' + esc(r.s.id) + '">Open spot</button></div></article>').join('');
+    const pairs = [];
+    list.forEach(s => { const an = state.analyses[s.id]; let best = null; an.daily.forEach(d => { if (d.score != null && (!best || d.score > best.score)) best = d; }); if (best && best.score >= 3.5) pairs.push({ s, d: best }); });
+    pairs.sort((a, b) => b.d.score - a.d.score);
+    const lw = $('#leadWeek');
+    lw.innerHTML = pairs.length ? pairs.slice(0, 8).map(p => '<button class="chip day" type="button" data-goto="' + esc(p.s.id) + '" title="' + esc(p.d.label) + ' at ' + esc(p.s.name) + ' on ' + esc(dayLabel(p.d.d)) + '"><i class="sw s' + p.d.step + '"></i>' + esc(dayLabel(p.d.d, 'wd')) + ' · ' + esc(p.s.name) + ' <b class="num">' + fmtScore(p.d.score) + '</b></button>').join('') : '<span class="muted">Nothing above "Fair" in the next 9 days for these spots.</span>';
+  }
+
+  function renderLegend() {
+    const el = $('#rampLegend'); if (!el) return;
+    el.innerHTML = CSC.LABELS.map((l, i) => '<span><i class="s' + i + '"></i>' + esc(l) + '</span>').join('');
+  }
+
+  function renderCards() {
+    const list = visibleSpots();
+    $('#spotsSub').textContent = list.length + ' of ' + SPOTS.length + ' spots' + (state.sort === 'now' ? ', best first' : '');
+    const wrap = $('#cards');
+    wrap.innerHTML = list.length ? list.map(s => renderCard(state.analyses[s.id])).join('') : '<div class="empty">No spots match. Clear a filter.</div>';
+    wrap.querySelectorAll('.chart-scroll').forEach(sc => { const svg = sc.querySelector('svg'); if (!svg) return; const px = +svg.dataset.px, padl = +svg.dataset.padl; sc.scrollLeft = Math.max(0, padl + state.nowIdx * px - 80); });
+  }
+
+  function renderCard(an) {
+    const s = an.spot, f = state.focusIdx, h = an.hours[f], open = state.expanded.has(s.id);
+    const nxt = CSC.nextWindow(an, f, 5.5) || CSC.nextWindow(an, f, 3.5);
+    const nxtGood = nxt && nxt.peak.score >= 5.5;
+    const later = an.hours[Math.min(f + 3, an.hours.length - 1)];
+    const trend = later.score - h.score > 0.7 ? '▲ building' : h.score - later.score > 0.7 ? '▼ dropping' : '→ steady';
+    const ws = CSC.wetsuit(h.sst, h.air, h.ws);
+    const tideNext = an.tides.find(e => e.i >= f);
+    const strip = an.daily.map(d => '<button class="cell s' + d.step + (d.d === state.now.date ? ' today' : '') + '" type="button" data-day="' + d.k + '" data-goto="' + esc(s.id) + '" title="' + esc(dayLabel(d.d)) + ': ' + esc(d.label) + (d.best ? ' at ' + String(d.best.H).padStart(2, '0') + ':00' : '') + '"><b class="num">' + fmtScore(d.score) + '</b>' + esc(dayLabel(d.d, 'wd').slice(0, 2)) + '</button>').join('');
+    return '<article class="card' + (open ? ' open' : '') + '" id="spot-' + esc(s.id) + '" data-id="' + esc(s.id) + '">' +
+      '<div class="card-head"><span class="badge s' + h.step + '"><span class="num">' + fmtScore(h.score) + '</span><small>' + esc(h.label) + '</small></span>' +
+      '<div class="title"><h3>' + esc(s.name) + '</h3><span class="where"><b>' + esc(REGION_NAME[s.region]) + '</b> · ' + esc(s.area) + ' · ' + esc(s.break_type) + ' · ' + esc(skillText(s.skill)) + '</span></div>' +
+      '<button class="star" type="button" data-fav="' + esc(s.id) + '" aria-pressed="' + state.favs.has(s.id) + '" aria-label="Favourite ' + esc(s.name) + '">★</button></div>' +
+      '<div class="metrics">' +
+      '<div class="metric"><div class="k">Faces</div><div class="v num">' + fmtLen(h.face) + '</div><div class="d">' + esc(trend) + (h.flags.length ? ' · ' + esc(h.flags.join(', ')) : '') + '</div></div>' +
+      '<div class="metric"><div class="k">Swell</div><div class="v num">' + (h.swell ? arrowSvg(h.swell.d) + ' ' + fmtLen(h.swell.h) + ' @ ' + Math.round(h.swell.t) + 's' : '–') + '</div><div class="d">' + (h.swell ? esc(CSC.compass16(h.swell.d)) + (h.swell.which === 'secondary' ? ' (2nd swell)' : '') + ', fit ' + Math.round(h.fit * 100) + '%' : '') + '</div></div>' +
+      '<div class="metric"><div class="k">Wind</div><div class="v num">' + arrowSvg(h.wd) + ' ' + fmtWind(h.ws) + '</div><div class="d">' + esc(CSC.compass16(h.wd)) + ' <span class="tag ' + h.rel + '">' + esc(relWord[h.rel]) + '</span>' + (h.wg ? ' gusts ' + fmtWind(h.wg) : '') + '</div></div>' +
+      '<div class="metric"><div class="k">Water</div><div class="v num">' + fmtTemp(h.sst) + '</div><div class="d">' + esc(ws.short) + ' · air ' + fmtTemp(h.air) + '</div></div>' +
+      '<div class="metric"><div class="k">Tide</div><div class="v">' + (h.tideTrend ? esc(h.tideTrend) : '–') + '</div><div class="d">' + (tideNext ? esc(tideNext.type) + ' ' + esc(tideNext.time) + (tideNext.d !== h.d ? ' ' + esc(dayLabel(tideNext.d, 'wd')) : '') : '') + ' · likes ' + esc(tideText(s.tide)) + '</div></div>' +
+      '<div class="metric"><div class="k">Sky</div><div class="v">' + esc(wmo(h.code)) + '</div><div class="d">rain ' + (h.rain == null ? '–' : h.rain + '%') + (h.uv != null ? ' · UV ' + Math.round(h.uv) : '') + '</div></div>' +
+      '</div>' +
+      '<div class="next">' + (nxt ? ('<span class="eyebrow">' + (nxtGood ? 'Next good window' : 'Best coming window') + '</span><span><b>' + esc(dayLabel(nxt.start.d, 'short')) + ' ' + String(nxt.start.H).padStart(2, '0') + ':00–' + String(nxt.end.H + 1).padStart(2, '0') + ':00</b> · peaks <span class="badge s' + nxt.peak.step + '"><span class="num">' + nxt.peak.score.toFixed(1) + '</span></span></span>') : '<span class="eyebrow">Next good window</span><span>Nothing above Fair in the next 9 days.</span>') + '</div>' +
+      '<div class="strip">' + strip + '</div>' +
+      '<div class="card-foot"><span class="sub">' + esc(s.description) + '</span><button class="btn small" type="button" data-toggle="' + esc(s.id) + '">' + (open ? 'Close' : 'Details') + '</button></div>' +
+      (open ? renderDetail(an, h) : '') +
+      '</article>';
+  }
+
+  function renderDetail(an, h) {
+    const s = an.spot;
+    const tides = an.tides.filter(e => e.i >= state.nowIdx).slice(0, 6).map(e => '<div class="tide-ev"><b>' + esc(e.type === 'high' ? 'High' : 'Low') + ' ' + esc(e.time) + '</b>' + esc(dayLabel(e.d, 'short')) + ' · ' + (e.h >= 0 ? '+' : '') + e.h.toFixed(2) + ' m</div>').join('');
+    const why = renderWhy(h, s);
+    const guide = '<dl class="kv">' +
+      '<dt>Works on</dt><dd>' + esc(windowText(s)) + ' swell, ' + esc(fmtLen(s.size_min_m) + ' to ' + fmtLen(s.size_max_m)) + ' offshore, best around ' + s.best_period_s + ' s</dd>' +
+      '<dt>Wind</dt><dd>Offshore from ' + esc(CSC.compass16(s.wind_offshore_dir)) + ' (±' + (s.wind_offshore_tolerance || 55) + '°)</dd>' +
+      '<dt>Tide</dt><dd>' + esc(tideText(s.tide)) + '</dd>' +
+      '<dt>Bottom</dt><dd>' + esc(s.bottom || s.break_type) + ' · ' + esc(s.exposure) + ' to swell</dd>' +
+      '<dt>Level</dt><dd>' + esc(skillText(s.skill)) + '</dd>' +
+      (s.hazards && s.hazards.length ? '<dt>Hazards</dt><dd>' + esc(s.hazards.join(', ')) + '</dd>' : '') +
+      (s.crowd ? '<dt>Crowd</dt><dd>' + esc(s.crowd) + '</dd>' : '') +
+      (s.best_season ? '<dt>Season</dt><dd>' + esc(s.best_season) + '</dd>' : '') +
+      (s.aka && s.aka.length ? '<dt>Also called</dt><dd>' + esc(s.aka.join(', ')) + '</dd>' : '') +
+      '</dl>' +
+      (s.local_notes && s.local_notes !== 'placeholder' ? '<p class="sub" style="margin-top:8px">' + esc(s.local_notes) + '</p>' : '') +
+      '<p class="conf muted" style="margin-top:8px">Spot data confidence: ' + esc(s.confidence || 'unknown') + '. Model cell ' + (an.grid ? an.grid.lat.toFixed(2) + ', ' + an.grid.lon.toFixed(2) : '–') + '.' + (s.sources && s.sources.length ? ' Sources: <span class="sources">' + s.sources.map(u => /^https?:/.test(u) ? '<a href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(u.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]) + '</a>' : esc(u)).join(', ') + '</span>' : '') + '</p>';
+    return '<div class="detail">' +
+      '<div><h4>Next 9 days, hour by hour</h4>' + renderChart(an) + '<div class="legend chart-legend">' + CSC.LABELS.map((l, i) => '<span><i class="s' + i + '"></i>' + esc(l) + '</span>').join('') + '<span><i style="background:var(--night)"></i>dark</span><span>bars: face height · arrows: wind (green offshore, amber cross, red onshore) · line: tide</span></div>' + renderHourlyTable(an) + '</div>' +
+      '<div class="two"><div><h4>Why ' + fmtScore(h.score) + ' at ' + String(h.H).padStart(2, '0') + ':00</h4>' + why + '</div><div><h4>Tides</h4><div class="tides">' + (tides || '<span class="muted">No tide signal in the model for this cell.</span>') + '</div><p class="sub" style="margin-top:8px">Model sea level for timing only; heights are relative to mean sea level, not chart datum.</p></div></div>' +
+      '<div><h4>Spot guide</h4>' + guide + '</div>' +
+      '</div>';
+  }
+
+  function renderWhy(h, s) {
+    if (!h.swell) return '<p class="sub">No swell in the model at this hour.</p>';
+    const rows = [
+      ['Size', h.comp.size, fmtLen(h.hSize) + ' period-adjusted swell (' + CSC.compass16(h.swell.d) + ', direction fit ' + Math.round(h.fit * 100) + '%) against a ' + fmtLen(s.size_min_m * CSC.EXPOSURE[s.exposure].thr) + ' to ' + fmtLen(s.size_max_m * CSC.EXPOSURE[s.exposure].thr) + ' working range'],
+      ['Wind', h.comp.wind, CSC.compass16(h.wd) + ' ' + fmtWind(h.ws) + ', ' + relWord[h.rel] + ' (offshore here is ' + CSC.compass16(s.wind_offshore_dir) + ')'],
+      ['Period', 0.35 + 0.65 * h.comp.period, Math.round(h.swell.T) + ' s peak-equivalent against a best of ' + s.best_period_s + ' s'],
+      ['Tide', h.comp.tide, h.tideF == null ? 'no tide signal' : Math.round(h.tideF * 100) + '% of today\'s range, ' + (h.tideTrend || '') + '; this spot likes ' + tideText(s.tide)],
+      ['Chop', h.comp.chop, h.ww != null ? 'wind-sea ' + fmtLen(h.ww) + (h.comp.chop < 1 ? ' running into the break' : ' (not heading into the break)') : '–']
+    ];
+    return '<div class="why">' + rows.map(r => '<div class="row"><span>' + esc(r[0]) + ' <b class="num">' + Math.round(r[1] * 100) + '%</b></span><div class="bar"><i style="width:' + Math.round(r[1] * 100) + '%"></i></div><span class="txt">' + esc(r[2]) + '</span></div>').join('') + '<p class="sub">Score = (size × wind × period weight × tide × chop)<sup>0.8</sup> × 10. Everything multiplies, so one bad factor sinks the hour the way it does in real life. Scores are relative to each spot\'s own potential: a 7 at Muizenberg is a great Muizenberg day, not a bigger wave than a 6 at the Kom.</p></div>';
+  }
+
+  function renderChart(an) {
+    const hrs = an.hours, n = hrs.length, PX = 7, padL = 38, padR = 8, W = n * PX;
+    const faceH = 100, windH = 36, tideH = 44, axisH = 20, gap = 14, top = 16;
+    const yWind = top + faceH + gap, yTide = yWind + windH + gap, yAxis = yTide + tideH + 6, H = yAxis + axisH;
+    const maxFace = Math.max(0.5, ...hrs.map(h => h.face || 0)); const yMax = Math.ceil(maxFace / 0.5) * 0.5;
+    const yOf = v => top + faceH - (v / yMax) * faceH; const x = i => padL + i * PX;
+    let s = '';
+    let i = 0; while (i < n) { if (!hrs[i].isLight) { let j = i; while (j < n && !hrs[j].isLight) j++; s += '<rect class="night" x="' + x(i) + '" y="' + top + '" width="' + ((j - i) * PX) + '" height="' + faceH + '"/>'; i = j; } else i++; }
+    [0, yMax / 2, yMax].forEach(v => { s += '<line class="grid" x1="' + padL + '" x2="' + (padL + W) + '" y1="' + yOf(v).toFixed(1) + '" y2="' + yOf(v).toFixed(1) + '"/><text class="tick" x="' + (padL - 4) + '" y="' + (yOf(v) + 4).toFixed(1) + '" text-anchor="end">' + fmtLen(v, 1, true) + '</text>'; });
+    s += '<text class="rowlab" x="' + (padL - 4) + '" y="' + (top - 5) + '" text-anchor="end">' + (state.units.len === 'm' ? 'm' : 'ft') + '</text>';
+    hrs.forEach((h, k) => { if (h.H === 0) s += '<line class="daysep" x1="' + x(k) + '" x2="' + x(k) + '" y1="' + (top - 12) + '" y2="' + (yAxis + axisH - 6) + '"/><text class="daylab" x="' + (x(k) + 4) + '" y="' + (top - 4) + '">' + esc(dayLabel(h.d, 'short')) + '</text>'; });
+    hrs.forEach((h, k) => { if (h.face == null || h.face <= 0) return; const hh = Math.max(1, (h.face / yMax) * faceH); s += '<rect class="bar ' + (h.isLight ? 's' + h.step : 'off') + '" x="' + (x(k) + 1) + '" y="' + yOf(h.face).toFixed(1) + '" width="' + (PX - 2) + '" height="' + hh.toFixed(1) + '" rx="1.5"/>'; });
+    s += '<line class="now" x1="' + (x(state.nowIdx) + PX / 2) + '" x2="' + (x(state.nowIdx) + PX / 2) + '" y1="' + (top - 2) + '" y2="' + yAxis + '"/>';
+    s += '<text class="rowlab" x="' + (padL - 4) + '" y="' + (yWind + 14) + '" text-anchor="end">wind</text>';
+    hrs.forEach((h, k) => { if (k % 2 || h.wd == null) return; const cx = x(k) + PX, cy = yWind + 11; s += '<g transform="translate(' + cx + ' ' + cy + ') rotate(' + ((h.wd + 90) % 360) + ')"><path class="warrow ' + h.rel + '" d="M-5,-3 L5,0 L-5,3 Z"/></g>'; if (k % 6 === 0) s += '<text class="tick" x="' + (x(k) + PX) + '" y="' + (yWind + 32) + '" text-anchor="middle">' + fmtWind(h.ws, true) + '</text>'; });
+    const vals = hrs.map(h => h.tideH).filter(v => v != null);
+    if (vals.length) {
+      const mn = Math.min(...vals), mx = Math.max(...vals); const ty = v => yTide + tideH - ((v - mn) / Math.max(mx - mn, 0.01)) * tideH;
+      let d = ''; hrs.forEach((h, k) => { if (h.tideH == null) return; d += (d ? 'L' : 'M') + (x(k) + PX / 2) + ',' + ty(h.tideH).toFixed(1) + ' '; });
+      s += '<path class="tide" d="' + d + '"/>';
+      an.tides.forEach(ev => { if (ev.i < n) s += '<circle class="tidept" cx="' + (x(ev.i) + PX / 2) + '" cy="' + ty(ev.h).toFixed(1) + '" r="3"/>'; });
+      s += '<text class="rowlab" x="' + (padL - 4) + '" y="' + (yTide + tideH / 2 + 4) + '" text-anchor="end">tide</text>';
+    }
+    hrs.forEach((h, k) => { if (h.H % 6 === 0) s += '<text class="tick" x="' + (x(k) + PX / 2) + '" y="' + (yAxis + 14) + '" text-anchor="middle">' + String(h.H).padStart(2, '0') + '</text>'; });
+    s += '<line class="xhair" x1="-10" x2="-10" y1="' + top + '" y2="' + yAxis + '"/>';
+    return '<div class="chart-wrap"><div class="chart-scroll"><svg class="chart" viewBox="0 0 ' + (padL + W + padR) + ' ' + H + '" width="' + (padL + W + padR) + '" height="' + H + '" data-padl="' + padL + '" data-px="' + PX + '" data-n="' + n + '" role="img" aria-label="Hourly face height, wind and tide for ' + esc(an.spot.name) + '">' + s + '</svg></div><div class="tip" hidden></div></div>';
+  }
+
+  function renderHourlyTable(an) {
+    const rows = an.hours.filter(h => h.isLight && !h.nodata && h.i >= state.nowIdx).slice(0, 72);
+    return '<details class="tbl"><summary>Show the daylight hours as a table</summary><div class="table-wrap"><table class="hourly"><thead><tr><th>When</th><th>Rating</th><th>Faces</th><th>Swell</th><th>Period</th><th>Wind</th><th>Water</th><th>Tide</th></tr></thead><tbody>' +
+      rows.map(h => '<tr><td>' + esc(dayLabel(h.d, 'wd')) + ' ' + String(h.H).padStart(2, '0') + ':00</td><td><span class="badge s' + h.step + '"><span class="num">' + fmtScore(h.score) + '</span></span></td><td class="num">' + fmtLen(h.face) + '</td><td class="num">' + (h.swell ? fmtLen(h.swell.h) + ' ' + CSC.compass16(h.swell.d) : '–') + '</td><td class="num">' + (h.swell ? Math.round(h.swell.t) + ' s' : '–') + '</td><td class="num">' + fmtWind(h.ws) + ' ' + CSC.compass16(h.wd) + ' ' + relWord[h.rel] + '</td><td class="num">' + fmtTemp(h.sst) + '</td><td>' + (h.tideTrend || '–') + '</td></tr>').join('') +
+      '</tbody></table></div></details>';
+  }
+
+  function renderPlanner() {
+    const list = visibleSpots(); const t = $('#planTable');
+    if (!state.data || !list.length) { t.innerHTML = ''; return; }
+    const days = state.data.days;
+    t.innerHTML = '<thead><tr><th class="spot">Spot</th>' + days.map((d, k) => '<th class="' + (d === state.now.date ? 'today' : '') + (k >= 7 ? ' lowc' : '') + '">' + esc(dayLabel(d, 'wd')) + '<br>' + esc(dayLabel(d, 'short').replace(/^\S+\s/, '')) + (k >= 7 ? '*' : '') + '</th>').join('') + '</tr></thead><tbody>' +
+      list.map(s => { const an = state.analyses[s.id]; return '<tr><td class="spot">' + esc(s.name) + '<small>' + esc(REGION_NAME[s.region]) + '</small></td>' + an.daily.map(d => '<td class="cell' + (d.d === state.now.date ? ' today' : '') + '"><button type="button" class="s' + d.step + '" data-goto="' + esc(s.id) + '" data-day="' + d.k + '" title="' + esc(s.name) + ', ' + esc(dayLabel(d.d)) + ': ' + esc(d.label) + (d.best ? ', best at ' + String(d.best.H).padStart(2, '0') + ':00, ' + esc(fmtLen(d.best.face)) + ' faces, ' + esc(fmtWind(d.best.ws)) + ' ' + esc(CSC.compass16(d.best.wd)) : '') + '"><span class="num">' + fmtScore(d.score) + '</span><small>' + (d.best ? String(d.best.H).padStart(2, '0') + 'h' : '') + '</small></button></td>').join('') + '</tr>'; }).join('') + '</tbody>';
+  }
+
+  /* ---------- map ---------- */
+  function rampColor(step) { return getComputedStyle(document.documentElement).getPropertyValue('--r' + step).trim() || '#888'; }
+  function renderMap() {
+    const sec = $('#mapSec');
+    if (!window.L) { sec.hidden = true; return; }
+    if (!state.map) {
+      const map = L.map('map', { scrollWheelZoom: false, zoomControl: true, attributionControl: true });
+      map.setView([-33.95, 19.6], 7);
+      const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 17, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+      tiles.on('tileerror', () => { if (!state.tileFail) { state.tileFail = true; $('#map').classList.add('notiles'); $('#mapNote').hidden = false; } });
+      tiles.addTo(map);
+      map.on('popupopen', e => { const b = e.popup.getElement().querySelector('[data-goto]'); if (b) b.addEventListener('click', () => openSpot(b.dataset.goto, true)); });
+      state.map = map;
+    }
+    const f = state.focusIdx; const list = visibleSpots(); const visible = new Set(list.map(s => s.id));
+    SPOTS.forEach(s => {
+      const an = state.analyses[s.id]; if (!an) return;
+      const h = an.hours[f]; const col = rampColor(h.step);
+      let mk = state.markers[s.id];
+      if (!mk) {
+        mk = L.circleMarker([s.lat, s.lon], { radius: 8, weight: 2, color: getComputedStyle(document.documentElement).getPropertyValue('--surface').trim() || '#fff', fillOpacity: 1 });
+        mk.bindTooltip(s.name, { permanent: false, direction: 'top', offset: [0, -8] });
+        state.markers[s.id] = mk;
+      }
+      mk.setStyle({ fillColor: col });
+      mk.bindPopup('<span class="badge s' + h.step + '"><span class="num">' + fmtScore(h.score) + '</span><small>' + esc(h.label) + '</small></span><b>' + esc(s.name) + '</b><br><span class="sub">' + esc(mainLine(h)) + '</span><br><button class="link" type="button" data-goto="' + esc(s.id) + '">Open spot</button>');
+      if (visible.has(s.id)) { if (!state.map.hasLayer(mk)) mk.addTo(state.map); } else if (state.map.hasLayer(mk)) state.map.removeLayer(mk);
+    });
+    if (list.length && state.region !== 'all') { const b = L.latLngBounds(list.map(s => [s.lat, s.lon])); state.map.fitBounds(b.pad(0.3), { maxZoom: 11 }); }
+    else if (list.length) state.map.setView([-33.95, 19.6], 7);
+    setTimeout(() => state.map.invalidateSize(), 50);
+  }
+
+  /* ---------- surf log ---------- */
+  function renderLogControls() {
+    const sel = $('#logSpot'); if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = SPOTS.slice().sort((a, b) => a.name.localeCompare(b.name)).map(s => '<option value="' + esc(s.id) + '">' + esc(s.name) + ' · ' + esc(REGION_NAME[s.region]) + '</option>').join('');
+    if (cur) sel.value = cur;
+    const hs = $('#logHour'); if (!hs.options.length) hs.innerHTML = Array.from({ length: 24 }, (_, i) => '<option value="' + i + '"' + (i === 7 ? ' selected' : '') + '>' + String(i).padStart(2, '0') + ':00</option>').join('');
+    const d = $('#logDate'); if (!d.value && state.now) d.value = state.now.date;
+  }
+  function condAt(spotId, date, hour) {
+    const an = state.analyses[spotId]; if (!an) return null;
+    const h = an.hours.find(x => x.d === date && x.H === +hour); if (!h || !h.swell) return null;
+    return { score: h.score, face: h.face, sh: h.swell.h, st: Math.round(h.swell.t), sd: h.swell.d, ws: h.ws, wd: h.wd, rel: h.rel, sst: h.sst, tide: h.tideTrend };
+  }
+  const condText = c => c ? (fmtLen(c.face) + ' faces · ' + CSC.compass16(c.sd) + ' ' + fmtLen(c.sh) + ' @ ' + c.st + ' s · ' + CSC.compass16(c.wd) + ' ' + fmtWind(c.ws) + ' ' + relWord[c.rel] + ' · ' + fmtTemp(c.sst) + ' · forecast rating ' + c.score.toFixed(1)) : 'no forecast captured';
+  function renderLog() {
+    const log = store.get(LOG_KEY, []); const list = $('#logList'); if (!list) return;
+    const byId = {}; SPOTS.forEach(s => { byId[s.id] = s; });
+    list.innerHTML = log.length ? log.slice().sort((a, b) => (b.date + b.hour) > (a.date + a.hour) ? 1 : -1).map(e => '<div class="log-item"><span class="stars">' + '★'.repeat(e.stars) + '<span style="color:var(--line)">' + '★'.repeat(5 - e.stars) + '</span></span><b>' + esc(byId[e.spotId] ? byId[e.spotId].name : e.spotId) + '</b><span class="muted">' + esc(e.date) + ' ' + String(e.hour).padStart(2, '0') + ':00</span>' + (e.notes ? '<span>' + esc(e.notes) + '</span>' : '') + '<span class="cond">' + esc(condText(e.cond)) + '</span><button class="btn small" type="button" data-dellog="' + esc(e.id) + '">Delete</button></div>').join('') : '<div class="empty">No sessions logged yet. Log one after your next surf.</div>';
+    const good = log.filter(e => e.stars >= 4 && e.cond); const sum = $('#logSummary');
+    if (good.length >= 2) {
+      const avg = k => good.reduce((a, e) => a + e.cond[k], 0) / good.length; const off = good.filter(e => e.cond.rel === 'offshore').length;
+      const spotsCount = {}; good.forEach(e => { spotsCount[e.spotId] = (spotsCount[e.spotId] || 0) + 1; }); const topSpot = Object.entries(spotsCount).sort((a, b) => b[1] - a[1])[0];
+      sum.hidden = false; sum.innerHTML = '<b>Your ' + good.length + ' best sessions</b> averaged ' + esc(fmtLen(avg('sh'))) + ' swell @ ' + Math.round(avg('st')) + ' s, ' + esc(fmtLen(avg('face'))) + ' faces, ' + Math.round(100 * off / good.length) + '% offshore, forecast rating ' + avg('score').toFixed(1) + '. Most often at ' + esc(byId[topSpot[0]] ? byId[topSpot[0]].name : topSpot[0]) + '.';
+    } else sum.hidden = true;
+  }
+
+  /* ---------- actions ---------- */
+  function openSpot(id, scroll) {
+    if (!state.analyses[id]) return;
+    state.expanded.add(id); renderCards();
+    if (scroll !== false) { const el = document.getElementById('spot-' + id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  }
+  function toggleSpot(id) { if (state.expanded.has(id)) state.expanded.delete(id); else state.expanded.add(id); renderCards(); }
+
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-goto],[data-toggle],[data-fav],[data-region],[data-dellog]'); if (!t) return;
+    if (t.dataset.goto) { openSpot(t.dataset.goto, true); }
+    else if (t.dataset.toggle) { toggleSpot(t.dataset.toggle); }
+    else if (t.dataset.fav) { const id = t.dataset.fav; if (state.favs.has(id)) state.favs.delete(id); else state.favs.add(id); store.set(FAV_KEY, Array.from(state.favs)); renderCards(); if (state.favOnly) { renderLead(); renderPlanner(); renderMap(); } }
+    else if (t.dataset.region) { state.region = t.dataset.region; renderFilters(); renderLead(); renderCards(); renderPlanner(); renderMap(); }
+    else if (t.dataset.dellog) { const log = store.get(LOG_KEY, []).filter(x => x.id !== t.dataset.dellog); store.set(LOG_KEY, log); renderLog(); }
+  });
+  $('#levelSel').addEventListener('change', e => { state.level = e.target.value; renderLead(); renderCards(); renderPlanner(); renderMap(); });
+  $('#sortSel').addEventListener('change', e => { state.sort = e.target.value; renderLead(); renderCards(); renderPlanner(); });
+  $('#favBtn').addEventListener('click', () => { state.favOnly = !state.favOnly; renderFilters(); renderLead(); renderCards(); renderPlanner(); renderMap(); });
+  let searchTimer; $('#searchBox').addEventListener('input', e => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { state.search = e.target.value; renderLead(); renderCards(); renderPlanner(); renderMap(); }, 150); });
+  $('#refreshBtn').addEventListener('click', () => { if (state.data) load(true); else load(false); });
+
+  /* ---------- share, install, offline ---------- */
+  const pageUrl = () => SITE.publicUrl || location.href.split('#')[0];
+  let qrDone = false, deferredInstall = null;
+  function loadQrLib() {
+    return new Promise(res => {
+      if (window.QRCode) return res(true);
+      const sc = document.createElement('script');
+      sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+      sc.onload = () => res(true); sc.onerror = () => res(false);
+      document.head.appendChild(sc);
+    });
+  }
+  async function toggleShare(open) {
+    const p = $('#sharePanel'), b = $('#shareBtn');
+    const show = open == null ? p.hidden : open;
+    p.hidden = !show; b.setAttribute('aria-expanded', String(show));
+    if (!show) return;
+    const url = pageUrl();
+    $('#shareUrl').value = url;
+    $('#nativeShare').hidden = !navigator.share;
+    if (!qrDone && /^https?:/.test(url) && await loadQrLib()) {
+      try { new QRCode($('#qr'), { text: url, width: 156, height: 156, colorDark: '#0f1f26', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M }); qrDone = true; } catch (e) { console.warn('qr', e); }
+    }
+    $('#qrWrap').hidden = !qrDone;
+  }
+  $('#shareBtn').addEventListener('click', () => toggleShare());
+  $('#closeShare').addEventListener('click', () => toggleShare(false));
+  $('#copyUrl').addEventListener('click', async () => {
+    const b = $('#copyUrl');
+    try { await navigator.clipboard.writeText(pageUrl()); b.textContent = 'Copied'; setTimeout(() => { b.textContent = 'Copy'; }, 1600); }
+    catch (e) { const i = $('#shareUrl'); i.focus(); i.select(); }
+  });
+  $('#nativeShare').addEventListener('click', () => { navigator.share({ title: 'Cape Surf Check', text: 'Where to surf in the Western Cape this week', url: pageUrl() }).catch(() => {}); });
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; $('#installBtn').hidden = false; });
+  $('#installBtn').addEventListener('click', async () => { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch (e) { /* dismissed */ } deferredInstall = null; $('#installBtn').hidden = true; });
+  if ('serviceWorker' in navigator && onWeb && !framed && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.warn('service worker', err)); });
+  }
+  window.addEventListener('online', () => { if (state.data && ageMinutes(state.data.fetchedAt) >= FRESH_MIN) load(false); });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && state.data && ageMinutes(state.data.fetchedAt) >= 60) load(false); });
+  $('#unitsBtn').addEventListener('click', () => { state.units = state.units.len === 'm' ? { len: 'ft', wind: 'kn' } : { len: 'm', wind: 'kmh' }; store.set(PREF_KEY, state.units); if (state.data) renderAll(); else $('#unitsBtn').textContent = unitsLabel(); });
+  window.addEventListener('hashchange', () => { if (location.hash.startsWith('#spot-')) openSpot(location.hash.slice(6), true); });
+
+  $('#logForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const spotId = $('#logSpot').value, date = $('#logDate').value, hour = +$('#logHour').value, stars = +$('#logStars').value, notes = $('#logNotes').value.trim();
+    if (!spotId || !date) return;
+    const log = store.get(LOG_KEY, []);
+    log.push({ id: String(Date.now()), spotId, date, hour, stars, notes, cond: condAt(spotId, date, hour) });
+    if (!store.set(LOG_KEY, log)) notice('This browser is not allowing storage, so the session could not be saved.', 'err');
+    $('#logNotes').value = ''; renderLog();
+  });
+  $('#logExport').addEventListener('click', () => { const ta = $('#logText'); ta.hidden = false; ta.value = JSON.stringify(store.get(LOG_KEY, []), null, 1); ta.focus(); ta.select(); });
+  $('#logImport').addEventListener('click', () => {
+    const ta = $('#logText'); if (ta.hidden) { ta.hidden = false; ta.value = ''; ta.placeholder = 'Paste a backup here, then press this button again.'; ta.focus(); return; }
+    try { const arr = JSON.parse(ta.value); if (!Array.isArray(arr)) throw new Error('not a list'); const cur = store.get(LOG_KEY, []); const ids = new Set(cur.map(x => x.id)); arr.forEach(x => { if (x && x.id && !ids.has(x.id)) cur.push(x); }); store.set(LOG_KEY, cur); renderLog(); ta.hidden = true; notice('Backup merged: ' + cur.length + ' sessions in the log.', 'info'); }
+    catch (err) { notice('That did not look like a surf-log backup (' + esc(err.message) + ').', 'err'); }
+  });
+
+  /* chart hover */
+  document.addEventListener('pointermove', e => {
+    const svg = e.target.closest && e.target.closest('svg.chart'); const wrap = svg && svg.closest('.chart-wrap');
+    document.querySelectorAll('.tip').forEach(t => { if (!wrap || t.parentElement !== wrap) t.hidden = true; });
+    document.querySelectorAll('.xhair').forEach(l => { if (!svg || l.ownerSVGElement !== svg) l.setAttribute('x1', -10), l.setAttribute('x2', -10); });
+    if (!svg) return;
+    const card = svg.closest('.card'); const an = state.analyses[card.dataset.id]; if (!an) return;
+    const rect = svg.getBoundingClientRect(); const scale = svg.viewBox.baseVal.width / rect.width;
+    const xv = (e.clientX - rect.left) * scale; const padL = +svg.dataset.padl, PX = +svg.dataset.px, n = +svg.dataset.n;
+    const i = Math.floor((xv - padL) / PX); const tip = wrap.querySelector('.tip'); const line = svg.querySelector('.xhair');
+    if (i < 0 || i >= n) { tip.hidden = true; return; }
+    const h = an.hours[i]; const cx = padL + i * PX + PX / 2; line.setAttribute('x1', cx); line.setAttribute('x2', cx);
+    tip.innerHTML = '<b>' + esc(dayLabel(h.d, 'short')) + ' ' + String(h.H).padStart(2, '0') + ':00</b> <span class="badge s' + h.step + '"><span class="num">' + fmtScore(h.score) + '</span><small>' + esc(h.label) + '</small></span>' + (h.isLight ? '' : ' <span class="muted">dark</span>') +
+      '<div class="row"><span>Faces</span><span>' + esc(fmtLen(h.face)) + '</span></div>' +
+      '<div class="row"><span>Swell</span><span>' + (h.swell ? esc(CSC.compass16(h.swell.d) + ' ' + fmtLen(h.swell.h) + ' @ ' + Math.round(h.swell.t) + ' s') : '–') + '</span></div>' +
+      '<div class="row"><span>Wind</span><span>' + esc(CSC.compass16(h.wd) + ' ' + fmtWind(h.ws) + ' ' + relWord[h.rel]) + '</span></div>' +
+      '<div class="row"><span>Water / air</span><span>' + esc(fmtTemp(h.sst) + ' / ' + fmtTemp(h.air)) + '</span></div>' +
+      '<div class="row"><span>Tide</span><span>' + esc((h.tideH == null ? '–' : (h.tideH >= 0 ? '+' : '') + h.tideH.toFixed(2) + ' m') + (h.tideTrend ? ' ' + h.tideTrend : '')) + '</span></div>' +
+      '<div class="row"><span>Sky</span><span>' + esc(wmo(h.code) + (h.rain != null ? ', rain ' + h.rain + '%' : '')) + '</span></div>' +
+      (h.flags.length ? '<div class="row"><span>Flags</span><span>' + esc(h.flags.join(', ')) + '</span></div>' : '');
+    tip.hidden = false;
+    const wr = wrap.getBoundingClientRect(); let left = e.clientX - wr.left + 14; if (left + tip.offsetWidth > wr.width) left = Math.max(0, e.clientX - wr.left - tip.offsetWidth - 14);
+    tip.style.left = left + 'px';
+  });
+  document.addEventListener('pointerleave', () => { document.querySelectorAll('.tip').forEach(t => { t.hidden = true; }); }, true);
+
+  $('#unitsBtn').textContent = unitsLabel();
+  load(false);
+})();
+</script>
