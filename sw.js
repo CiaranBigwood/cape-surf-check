@@ -3,8 +3,14 @@
    Fonts and libraries: cache first. Forecast APIs and map tiles: always the network.
    Every cache step is optional: if the browser refuses storage, the page simply works online only. */
 const VERSION = 'csc-__VERSION__';
-const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'assets/icon-192.png'];
+const SHELL = ['./', 'manifest.webmanifest', 'assets/icon-192.png'];
 const LIBS = ['cdnjs.cloudflare.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
+
+function fromCache(req) {
+  return caches.match(req, { ignoreSearch: true })
+    .then(hit => hit || (req.mode === 'navigate' ? caches.match('./') : undefined))
+    .catch(() => undefined);
+}
 
 function remember(req, res) {
   if (!res || !(res.ok || res.type === 'opaque')) return;
@@ -33,14 +39,13 @@ self.addEventListener('fetch', event => {
   const url = new URL(req.url);
 
   if (url.origin === self.location.origin) {
-    event.respondWith(
-      fetch(req)
-        .then(res => { remember(req, res); return res; })
-        .catch(() => caches.match(req, { ignoreSearch: true })
-          .then(hit => hit || (req.mode === 'navigate' ? caches.match('./') : undefined))
-          .catch(() => undefined)
-          .then(hit => hit || Response.error()))
-    );
+    const network = fetch(req).then(res => { remember(req, res); return res; });
+    event.waitUntil(network.then(() => {}, () => {}));
+    const fallback = () => fromCache(req).then(hit => hit || Response.error());
+    if (req.mode !== 'navigate') { event.respondWith(network.catch(fallback)); return; }
+    // On one bar of signal, show the saved page after 3 s instead of a blank screen; the fresh copy still gets saved.
+    const slow = new Promise(r => setTimeout(r, 3000)).then(() => fromCache(req)).then(hit => hit || network);
+    event.respondWith(Promise.race([network, slow]).catch(fallback));
     return;
   }
 

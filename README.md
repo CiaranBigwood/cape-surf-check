@@ -61,7 +61,7 @@ Then open http://localhost:8000. Python 3.9 or later, standard library only.
 ## Credits and limits
 
 - Weather and marine data by [Open-Meteo.com](https://open-meteo.com/) (CC BY 4.0), free for non-commercial use.
-- Map by [Leaflet](https://leafletjs.com/) (BSD-2-Clause; its stylesheet is bundled as `leaflet.min.css`) with tiles © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors.
+- Map by [Leaflet](https://leafletjs.com/) (BSD-2-Clause, see `LICENSE-leaflet.txt`; its stylesheet is bundled as `leaflet.min.css`) with tiles © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors.
 - Spot rules were compiled from public spot guides (surf-forecast.com, Wannasurf, Surfline, Wavescape) and the
   shape of the coast. Each spot shows its confidence; `low` means set from geometry only.
 - Ratings are a model, not a surf report. Nobody has checked the beach. Rips, sharks, boats and crowds are not

@@ -12,7 +12,9 @@ Standard library only, so it runs on a bare GitHub Actions runner.
 import argparse
 import datetime as dt
 import hashlib
+import http.client
 import json
+import os
 import pathlib
 import re
 import shutil
@@ -74,12 +76,12 @@ def get_json(url, tries=4):
     for attempt in range(1, tries + 1):
         try:
             req = urllib.request.Request(url, headers=UA)
-            with urllib.request.urlopen(req, timeout=90) as r:
+            with urllib.request.urlopen(req, timeout=30) as r:
                 data = json.load(r)
             if isinstance(data, dict) and data.get("error"):
                 raise RuntimeError(data.get("reason", "Open-Meteo error"))
             return data if isinstance(data, list) else [data]
-        except (urllib.error.URLError, TimeoutError, RuntimeError, json.JSONDecodeError) as e:
+        except (OSError, http.client.HTTPException, ValueError, RuntimeError) as e:  # covers dropped and cut-off connections too
             code = getattr(e, "code", None)
             if attempt == tries or code in (400, 404):
                 raise
@@ -228,16 +230,21 @@ def main():
         except Exception as e:  # noqa: BLE001 - fall back rather than publish nothing
             print(f"  forecast fetch failed: {e}", flush=True)
             if a.previous:
-                forecast = previous_forecast(a.previous)
+                forecast = previous_forecast(a.previous) or (time.sleep(10) or previous_forecast(a.previous))
                 if forecast:
-                    print(f"  keeping the previous forecast from {forecast.get('fetchedAt')}", flush=True)
+                    print(f"::warning::Open-Meteo fetch failed ({e}); republishing the forecast from {forecast['fetchedAt']}", flush=True)
+                    age_h = (dt.datetime.now(dt.timezone.utc) - dt.datetime.fromisoformat(forecast["fetchedAt"])).total_seconds() / 3600
+                    if age_h > 24 and os.environ.get("GITHUB_EVENT_NAME") == "schedule":
+                        sys.exit(f"The forecast is {age_h:.0f} hours old and Open-Meteo still fails ({e}). "
+                                 "Failing so GitHub emails the owner; the live site keeps its last deployment.")
+            if forecast is None:
+                sys.exit("No forecast: Open-Meteo failed and no previous forecast.json could be loaded. Not publishing.")
     fc_json = json.dumps(forecast, separators=(",", ":"), allow_nan=False) if forecast else None
     if fc_json:
         (out / "forecast.json").write_text(fc_json, encoding="utf-8")
         print(f"  forecast.json {len(fc_json) / 1024:.0f} KB, fetched {forecast['fetchedAt']}", flush=True)
 
-    built_at = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
-    cfg = {"publicUrl": public_url, "repoUrl": a.repo_url.strip(), "builtAt": built_at}
+    cfg = {"publicUrl": public_url, "repoUrl": a.repo_url.strip()}  # no build time: keeps index.html, and so the offline cache, unchanged between data-only builds
     head_part, body_part = page_parts(spots, cfg, "null")
     index = document(head_part, body_part, public_url)
     (out / "index.html").write_text(index, encoding="utf-8")
