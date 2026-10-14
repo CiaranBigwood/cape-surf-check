@@ -1,0 +1,254 @@
+[
+ {
+  "spots": ["big-bay"],
+  "name": "From the lifesaving club",
+  "by": "Big Bay Surf Lifesaving Club",
+  "ipcamlive": "bigbaybigboy",
+  "page": "https://bigbaylifesaving.co.za/"
+ },
+ {
+  "spots": ["big-bay"],
+  "name": "Above the beach",
+  "by": "Cape Town Kite Club",
+  "player": "https://camsecure.uk/httpswebcam/ctkc/ctkc.html",
+  "page": "https://www.capetownkiteclub.com/big-bay-webcam"
+ },
+ {
+  "spots": ["blouberg"],
+  "name": "Beachfront, looking to Table Mountain",
+  "by": "Table Mountain Live Stream",
+  "youtube": "vOLCjL4kv-w",
+  "channel": "@TableMountainLiveStream",
+  "match": "Bloubergstrand Beach Camera"
+ },
+ {
+  "spots": ["milnerton"],
+  "name": "Milnerton beach",
+  "by": "Key to Cape Town",
+  "youtube": "z1PJqpgZccg",
+  "channel": "@KeytoCapeTown",
+  "match": "Milnerton",
+  "embed": false
+ },
+ {
+  "spots": ["rocklands"],
+  "name": "Three Anchor Bay from a rooftop",
+  "by": "Vanilla",
+  "youtube": "4Zu64CmAjMo",
+  "channel": "@VanillaISP",
+  "match": "Sea Point"
+ },
+ {
+  "spots": ["clifton"],
+  "name": "4th Beach",
+  "by": "SA Webcams",
+  "youtube": "IGu55JrxyHU",
+  "channel": "@SAWebcams",
+  "match": "Clifton 4th",
+  "embed": false
+ },
+ {
+  "spots": ["camps-bay"],
+  "name": "North end",
+  "by": "South Beach Camps Bay",
+  "ipcamlive": "cbbsb",
+  "page": "https://southbeachsa.com/south-beach-camps-bay-live-webcam-current-weather/"
+ },
+ {
+  "spots": ["camps-bay"],
+  "name": "Beachfront",
+  "by": "The Bay Hotel",
+  "ipcamlive": "vnlbeach",
+  "page": "https://thebayhotel.com/webcam/"
+ },
+ {
+  "spots": ["glen-reef-bali-bay"],
+  "name": "Tidal pool and reef",
+  "by": "Camps Bay Village",
+  "ipcamlive": "vnlcbv",
+  "page": "https://www.campsbayvillage.com/webcam/"
+ },
+ {
+  "spots": ["muizenberg"],
+  "name": "Beachfront",
+  "by": "REEF South Africa",
+  "youtube": "pUZ_T-NwC2Q",
+  "channel": "@Reef-SA",
+  "match": "Muizenberg Beach Live Webcam"
+ },
+ {
+  "spots": ["muizenberg"],
+  "name": "From Boyes Drive",
+  "by": "Muizenberg Wave Watchers",
+  "youtube": "xQGZlljQlCM",
+  "channel": "@MuizenbergWaveWatchers",
+  "match": "Wave Watchers"
+ },
+ {
+  "spots": ["muizenberg"],
+  "name": "From the surf shop",
+  "by": "The Corner Surf Shop",
+  "ipcamlive": "cornersurfshop",
+  "embed": false,
+  "page": "https://thecornersurfshop.com/muizenberg-beach-webcam/"
+ },
+ {
+  "spots": ["strand-pipe"],
+  "name": "Beachfront",
+  "by": "Strand Bodyboard Collective (Cape Ocean Adventures)",
+  "youtube": "zGlGodTfncQ",
+  "channel": "@CapeOceanAdventures",
+  "match": "Strand Bodyboard Collective"
+ },
+ {
+  "spots": ["strand-pipe"],
+  "name": "From Cape Sands",
+  "by": "Key to Cape Town",
+  "youtube": "nK3l-mKYCwc",
+  "channel": "@KeytoCapeTown",
+  "match": "Strand beach webcam",
+  "embed": false
+ },
+ {
+  "spots": ["bikini-beach"],
+  "name": "Bikini Beach",
+  "by": "Cape Ocean Adventures",
+  "youtube": "1QH44L9PsAo",
+  "channel": "@CapeOceanAdventures",
+  "match": "Patrolling Webcam",
+  "note": "The camera turns between Bikini Beach and Gordon's Bay harbour every 30 seconds"
+ },
+ {
+  "spots": ["wilderness"],
+  "name": "Wilderness beach",
+  "by": "Salinas Beach Restaurant",
+  "ipcamlive": "6884e34219436",
+  "page": "https://www.capetown-webcam.com/garden-route/wilderness-webcam"
+ },
+ {
+  "spots": ["llandudno"],
+  "name": "Surfline cam",
+  "by": "Surfline",
+  "page": "https://www.surfline.com/surf-report/llandudno/604f9d394046841199fe5d9b",
+  "note": "Free cam on Surfline; it may ask you to sign up"
+ },
+ {
+  "spots": ["melkbosstrand"],
+  "name": "Surfline cam",
+  "by": "Surfline",
+  "page": "https://www.surfline.com/surf-report/melkbosstrand/584204204e65fad6a77094ba",
+  "note": "Free cam on Surfline; it may ask you to sign up"
+ },
+ {
+  "spots": ["camps-bay"],
+  "name": "Surfline cam",
+  "by": "Surfline",
+  "page": "https://www.surfline.com/surf-report/camps-bay/617b196682a9fb124a873a62",
+  "note": "Free cam on Surfline; it may ask you to sign up"
+ },
+ {
+  "spots": ["muizenberg"],
+  "name": "Surfline cams (2)",
+  "by": "Surfline",
+  "page": "https://www.surfline.com/surf-report/muizenberg/584204204e65fad6a77094b7",
+  "note": "Two free cams on Surfline; it may ask you to sign up"
+ },
+ {
+  "spots": ["big-bay"],
+  "name": "OceanEye cam",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/big-bay/",
+  "note": "Free OceanEye account needed"
+ },
+ {
+  "spots": ["table-view"],
+  "name": "OceanEye cam",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/kite-beach/",
+  "note": "Free OceanEye account needed"
+ },
+ {
+  "spots": ["melkbosstrand"],
+  "name": "OceanEye cam",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/melkbos/",
+  "note": "Free OceanEye account needed"
+ },
+ {
+  "spots": ["rocklands"],
+  "name": "OceanEye cam",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/sea-point/",
+  "note": "Free OceanEye account needed"
+ },
+ {
+  "spots": ["clifton"],
+  "name": "OceanEye cam",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/clifton-4th/",
+  "note": "Free OceanEye account needed"
+ },
+ {
+  "spots": ["glen-beach", "camps-bay"],
+  "name": "OceanEye cam, Glen Beach",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/camps-bay/",
+  "note": "Free OceanEye account needed"
+ },
+ {
+  "spots": ["llandudno"],
+  "name": "OceanEye cam",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/llandudno/",
+  "note": "Free OceanEye account needed"
+ },
+ {
+  "spots": ["hout-bay"],
+  "name": "OceanEye cam",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/hout-bay/",
+  "note": "Free OceanEye account needed"
+ },
+ {
+  "spots": ["noordhoek-beach"],
+  "name": "OceanEye cam",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/noordhoek/",
+  "note": "Free OceanEye account needed"
+ },
+ {
+  "spots": ["long-beach-kommetjie"],
+  "name": "OceanEye cam",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/long-beach/",
+  "note": "Free OceanEye account needed"
+ },
+ {
+  "spots": ["muizenberg"],
+  "name": "OceanEye cam",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/muizenberg/",
+  "note": "Free OceanEye account needed"
+ },
+ {
+  "spots": ["strand-pipe"],
+  "name": "OceanEye cam",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/strand/",
+  "note": "Free OceanEye account needed"
+ },
+ {
+  "spots": ["the-wedge", "the-wreck"],
+  "name": "OceanEye cam",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/plettenberg-bay/",
+  "note": "Free OceanEye account needed"
+ },
+ {
+  "spots": ["robberg"],
+  "name": "OceanEye cam",
+  "by": "OceanEye",
+  "page": "https://oceaneye.co.za/spots/robberg-beach/",
+  "note": "Free OceanEye account needed"
+ }
+]

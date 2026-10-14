@@ -113,6 +113,8 @@ section:first-of-type .sec-head { margin-top: 20px; }
 .lead-body .line { font-size: .88rem; color: var(--ink-2); }
 .link { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; font-weight: 600; font-size: .85rem; text-align: left; }
 .link:hover { text-decoration: underline; }
+a.link, .leaflet-container a.link { color: var(--accent); text-decoration: none; }
+a.link:hover, .leaflet-container a.link:hover { text-decoration: underline; }
 .week-lead { margin-top: 18px; display: flex; flex-direction: column; gap: 8px; }
 .empty { padding: 20px; border: 1px dashed var(--line); border-radius: var(--radius); color: var(--muted); text-align: center; }
 
@@ -143,7 +145,7 @@ input[type="search"] { min-width: 150px; }
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
 .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 .leaflet-container { font-family: var(--font-body); }
-.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--surface); color: var(--ink); }
+.leaflet-container .leaflet-popup-content-wrapper, .leaflet-container .leaflet-popup-tip { background: var(--surface); color: var(--ink); }  /* beats leaflet.min.css, which loads later */
 .leaflet-popup-content { margin: 10px 14px; font-size: .9rem; }
 .leaflet-popup-content .badge { margin-right: 6px; }
 .leaflet-bar a { background: var(--surface); color: var(--ink); border-bottom-color: var(--line); }
@@ -184,7 +186,32 @@ input[type="search"] { min-width: 150px; }
 .strip .cell { border-radius: 5px; text-align: center; font-size: .72rem; padding: 4px 0 3px; line-height: 1.1; cursor: pointer; border: 0; font-family: inherit; }
 .strip .cell b { display: block; font-size: .82rem; }
 .strip .cell.today { outline: 2px solid var(--ink); outline-offset: -2px; }
-.card-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.card-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.card-foot > .sub { flex: 1 1 220px; }
+.actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; margin-left: auto; }
+a.btn { display: inline-flex; align-items: center; color: inherit; text-decoration: none; }
+.btn.cam-btn { display: inline-flex; align-items: center; gap: 6px; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #d93a2b; flex: none; }
+
+/* live cams */
+.cams { display: grid; gap: 8px; scroll-margin-top: 120px; }
+.detail .cams h4 { margin-bottom: 0; }
+.cam-tabs { display: flex; gap: 6px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; padding-bottom: 2px; }
+.cam-tabs::-webkit-scrollbar { display: none; }
+.cam-tabs .chip { flex: none; }
+.cam-view { position: relative; aspect-ratio: 16 / 9; width: 100%; max-width: 880px; border-radius: 8px; overflow: hidden; background: #0c171c; color: #e8f0f2; }
+.cam-view iframe, .cam-view > img, .cam-play { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.cam-view > img { object-fit: cover; }
+.cam-play { display: grid; place-content: center; justify-items: center; gap: 8px; padding: 12px; cursor: pointer; background: linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.45)); color: #ffffff; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+.cam-play .pb { width: 64px; height: 64px; border-radius: 50%; background: rgba(12,23,28,.72); display: grid; place-items: center; box-shadow: 0 2px 12px rgba(0,0,0,.4); }
+.cam-play .pb svg { width: 26px; height: 26px; margin-left: 4px; fill: #ffffff; }
+.cam-play:hover .pb, .cam-play:focus-visible .pb { background: #0b6f85; }
+.cam-tabs .chip:focus-visible, .cam-play:focus-visible { outline-offset: -3px; }  /* inside the box, so overflow does not clip the ring */
+.cam-out { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 10px; padding: 16px; text-align: center; font-size: .9rem; }
+.cam-out .btn { background: #fbfdfd; color: #0f1f26; border-color: transparent; font-weight: 600; }
+.cam-out small { color: #b3c3c9; }
+.cam-cap { font-size: .8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 2px 12px; }
+.cam-cap b { color: var(--ink-2); font-weight: 600; }
 .detail { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; padding-top: 6px; border-top: 1px solid var(--line); }
 .detail > *, .two > *, .card > *, .metric, .share-main, .learn .body > * { min-width: 0; }
 .detail h4 { font-size: .98rem; margin-bottom: 8px; }
@@ -367,6 +394,7 @@ footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line);
         </select>
       </label>
       <button class="chip" id="favBtn" type="button" aria-pressed="false">★ Favourites</button>
+      <button class="chip" id="camBtn" type="button" aria-pressed="false" hidden>Live cams</button>
       <input type="search" id="searchBox" placeholder="Find a spot" aria-label="Find a spot">
     </div>
   </section>
@@ -660,6 +688,7 @@ footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line);
   <p><b>Data:</b> Open-Meteo marine and weather forecasts (open-meteo.com, free, non-commercial). Waves come from the nearest ocean model cell to each spot, about 9 km across, so two spots in the same bay share a swell reading; the spot's own exposure and swell window turn that into a local estimate. Wind uses the nearest sea cell. The tide curve is the model's sea-level signal, good for timing, not a replacement for the SA Navy tide tables.</p>
   <p><b>Ratings are a model, not a surf report.</b> Nobody has checked the beach. Rips, sharks, boats and crowds are not in the numbers. Check the Shark Spotters flags at spotted beaches and look before you paddle.</p>
   <p>Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (CC BY 4.0). Map © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors.</p>
+  <p><b>Live cams</b> belong to the people who run them, named under each cam. They play from YouTube or the owner's own site, or open there; nothing is recorded or stored here. Directions open Google Maps.</p>
   <p id="siteLinks"></p>
   <p id="buildInfo"></p>
 </footer>
@@ -942,8 +971,8 @@ if (typeof module !== 'undefined') { module.exports = { CSC, SPOTS }; }
 
   const state = {
     data: null, source: 'none', analyses: {}, nowIdx: 0, focusIdx: 0, firstLight: false,
-    region: 'all', level: 'all', favOnly: false, sort: 'now', search: '',
-    units: store.get(PREF_KEY, { len: 'm', wind: 'kmh' }), favs: new Set(store.get(FAV_KEY, [])), expanded: new Set(),
+    region: 'all', level: 'all', favOnly: false, camOnly: false, sort: 'now', search: '',
+    units: store.get(PREF_KEY, { len: 'm', wind: 'kmh' }), favs: new Set(store.get(FAV_KEY, [])), expanded: new Set(), cams: {},
     map: null, markers: {}, tileFail: false,
     showAllCards: false, plannerReady: false, mapReady: false, leafletPromise: null
   };
@@ -1073,6 +1102,7 @@ if (typeof module !== 'undefined') { module.exports = { CSC, SPOTS }; }
     if (state.region !== 'all') list = list.filter(s => s.region === state.region);
     if (state.level !== 'all') { const max = CSC.SKILL_RANK[state.level]; list = list.filter(s => (CSC.SKILL_RANK[s.skill] == null ? 1 : CSC.SKILL_RANK[s.skill]) <= max); }
     if (state.favOnly) list = list.filter(s => state.favs.has(s.id));
+    if (state.camOnly) list = list.filter(s => s.cams && s.cams.length);
     if (q) list = list.filter(s => (s.name + ' ' + (s.aka || []).join(' ') + ' ' + (s.area || '') + ' ' + REGION_NAME[s.region]).toLowerCase().includes(q));
     const f = state.focusIdx;
     const weekBest = id => Math.max(0, ...state.analyses[id].daily.slice(0, 7).map(d => d.score || 0));
@@ -1097,6 +1127,7 @@ if (typeof module !== 'undefined') { module.exports = { CSC, SPOTS }; }
     const all = [{ key: 'all', name: 'All of the Western Cape' }].concat(CSC.REGIONS.filter(r => SPOTS.some(s => s.region === r.key)));
     c.innerHTML = all.map(r => '<button class="chip" type="button" data-region="' + r.key + '" aria-pressed="' + (state.region === r.key) + '">' + esc(r.name) + '</button>').join('');
     $('#favBtn').setAttribute('aria-pressed', String(state.favOnly));
+    const cb = $('#camBtn'); cb.hidden = !SPOTS.some(s => s.cams && s.cams.length); cb.setAttribute('aria-pressed', String(state.camOnly));
     $('#levelSel').value = state.level; $('#sortSel').value = state.sort;
   }
 
@@ -1140,7 +1171,19 @@ if (typeof module !== 'undefined') { module.exports = { CSC, SPOTS }; }
     const rest = list.length - shown.length;
     $('#moreWrap').hidden = rest <= 0;
     if (rest > 0) $('#showAll').textContent = 'Show all ' + list.length + ' spots (' + rest + ' more)';
-    wrap.querySelectorAll('.chart-scroll').forEach(sc => { const svg = sc.querySelector('svg'); if (!svg) return; const px = +svg.dataset.px, padl = +svg.dataset.padl; sc.scrollLeft = Math.max(0, padl + state.nowIdx * px - 80); });
+    scrollCharts(wrap);
+    /* a cam whose card is no longer on screen stops, so it does not start again by itself later */
+    Object.keys(state.cams).forEach(id => { if (state.cams[id].playing && !document.getElementById('cams-' + id)) state.cams[id].playing = false; });
+  }
+  function scrollCharts(root) {
+    root.querySelectorAll('.chart-scroll').forEach(sc => { const svg = sc.querySelector('svg'); if (!svg) return; const px = +svg.dataset.px, padl = +svg.dataset.padl; sc.scrollLeft = Math.max(0, padl + state.nowIdx * px - 80); });
+  }
+  /* Re-render one card in place, leaving the others (and any cam playing in them) alone. */
+  function refreshCard(id) {
+    const el = document.getElementById('spot-' + id), an = state.analyses[id];
+    if (!el || !an) { renderCards(); return; }
+    el.outerHTML = renderCard(an);
+    scrollCharts(document.getElementById('spot-' + id));
   }
 
   function renderCard(an) {
@@ -1166,7 +1209,10 @@ if (typeof module !== 'undefined') { module.exports = { CSC, SPOTS }; }
       '</div>' +
       '<div class="next">' + (nxt ? ('<span class="eyebrow">' + (nxtGood ? 'Next good window' : 'Best coming window') + '</span><span><b>' + esc(dayLabel(nxt.start.d, 'short')) + ' ' + String(nxt.start.H).padStart(2, '0') + ':00–' + String(nxt.end.H + 1).padStart(2, '0') + ':00</b> · peaks <span class="badge s' + nxt.peak.step + '"><span class="num">' + nxt.peak.score.toFixed(1) + '</span></span></span>') : '<span class="eyebrow">Next good window</span><span>Nothing above Fair in the next 9 days.</span>') + '</div>' +
       '<div class="strip">' + strip + '</div>' +
-      '<div class="card-foot"><span class="sub">' + esc(s.description) + '</span><button class="btn small" type="button" data-toggle="' + esc(s.id) + '">' + (open ? 'Close' : 'Details') + '</button></div>' +
+      '<div class="card-foot"><span class="sub">' + esc(s.description) + '</span><div class="actions">' +
+      '<a class="btn small" href="' + esc(directionsUrl(s)) + '" target="_blank" rel="noopener" aria-label="' + esc('Directions to ' + s.name + ' in Google Maps') + '"' + (s.access && s.access.note ? ' title="' + esc(s.access.note) + '"' : '') + '>Directions</a>' +
+      (s.cams && s.cams.length ? '<button class="btn small cam-btn" type="button" data-cam="' + esc(s.id) + '"><span class="live-dot" aria-hidden="true"></span>Live cam</button>' : '') +
+      '<button class="btn small" type="button" data-toggle="' + esc(s.id) + '">' + (open ? 'Close' : 'Details') + '</button></div></div>' +
       (open ? renderDetail(an, h) : '') +
       '</article>';
   }
@@ -1184,15 +1230,83 @@ if (typeof module !== 'undefined') { module.exports = { CSC, SPOTS }; }
       (s.hazards && s.hazards.length ? '<dt>Hazards</dt><dd>' + esc(s.hazards.join(', ')) + '</dd>' : '') +
       (s.crowd ? '<dt>Crowd</dt><dd>' + esc(s.crowd) + '</dd>' : '') +
       (s.best_season ? '<dt>Season</dt><dd>' + esc(s.best_season) + '</dd>' : '') +
+      '<dt>Getting there</dt><dd>' + (s.access && s.access.note ? esc(s.access.note) + ' ' : '') + '<a href="' + esc(directionsUrl(s)) + '" target="_blank" rel="noopener">Directions in Google Maps ↗</a></dd>' +
       (s.aka && s.aka.length ? '<dt>Also called</dt><dd>' + esc(s.aka.join(', ')) + '</dd>' : '') +
       '</dl>' +
       (s.local_notes && s.local_notes !== 'placeholder' ? '<p class="sub" style="margin-top:8px">' + esc(s.local_notes) + '</p>' : '') +
       '<p class="conf muted" style="margin-top:8px">Spot data confidence: ' + esc(s.confidence || 'unknown') + '. Model cell ' + (an.grid ? an.grid.lat.toFixed(2) + ', ' + an.grid.lon.toFixed(2) : '–') + '.' + (s.sources && s.sources.length ? ' Sources: <span class="sources">' + s.sources.map(u => /^https?:/.test(u) ? '<a href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(u.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]) + '</a>' : esc(u)).join(', ') + '</span>' : '') + '</p>';
-    return '<div class="detail">' +
+    return '<div class="detail">' + renderCams(s) +
       '<div><h4>Next 9 days, hour by hour</h4>' + renderChart(an) + '<div class="legend chart-legend">' + CSC.LABELS.map((l, i) => '<span><i class="s' + i + '"></i>' + esc(l) + '</span>').join('') + '<span><i style="background:var(--night)"></i>dark</span><span>bars: face height · arrows: wind (green offshore, amber cross, red onshore) · line: tide</span></div>' + renderHourlyTable(an) + '</div>' +
       '<div class="two"><div><h4>Why ' + fmtScore(h.score) + ' at ' + String(h.H).padStart(2, '0') + ':00</h4>' + why + '</div><div><h4>Tides</h4><div class="tides">' + (tides || '<span class="muted">No tide signal in the model for this cell.</span>') + '</div><p class="sub" style="margin-top:8px">Model sea level for timing only; heights are relative to mean sea level, not chart datum.</p></div></div>' +
       '<div><h4>Spot guide</h4>' + guide + '</div>' +
       '</div>';
+  }
+
+  /* ---------- directions and live cams ---------- */
+  /* Directions go to the spot's access point (a car park, harbour or slipway) when spots.json has one, else to the break:
+     Google Maps then routes to the nearest road. Cams only load once a card is open, and video only on a tap. */
+  function directionsUrl(s) { const p = s.access || s; return 'https://www.google.com/maps/dir/?api=1&destination=' + p.lat + ',' + p.lon; }
+  const hostName = u => { try { const h = new URL(u).hostname.replace(/^www\./, ''); return /(^|\.)youtube\.com$/.test(h) ? 'YouTube' : h; } catch (e) { return 'their site'; } };
+  const freshStill = u => u + (u.includes('?') ? '&' : '?') + 't=' + Math.floor(Date.now() / 60000);
+  const PLAY_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>';
+  function camState(id) { return state.cams[id] || (state.cams[id] = { sel: 0, playing: false }); }
+  function renderCams(s) {
+    const cams = s.cams || []; if (!cams.length) return '';
+    const st = camState(s.id); const i = Math.min(st.sel, cams.length - 1); const c = cams[i]; const host = hostName(c.page);
+    const tabs = cams.length > 1 ? '<div class="cam-tabs" role="group" aria-label="Choose a cam">' + cams.map((x, j) => '<button class="chip" type="button" data-camsel="' + esc(s.id) + '" data-i="' + j + '" aria-pressed="' + (j === i) + '">' + esc(x.name) + '</button>').join('') + '</div>' : '';
+    let view;
+    if (c.play && st.playing) view = '<iframe src="' + esc(c.play) + '" title="' + esc('Live cam: ' + c.name) + '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen scrolling="no" referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+    else if (c.play) view = (c.still || c.poster ? '<img src="' + esc(c.still ? freshStill(c.still) : c.poster) + '" alt="" loading="lazy">' : '') + '<button class="cam-play" type="button" data-camplay="' + esc(s.id) + '" aria-label="' + esc('Watch live: ' + c.name) + '"><span class="pb">' + PLAY_SVG + '</span><span>Watch live</span></button>';
+    else if (c.still) view = '<img src="' + esc(freshStill(c.still)) + '" alt="' + esc('Latest picture from the ' + c.name + ' cam') + '" loading="lazy">';
+    else if (c.off) view = '<div class="cam-out"><span>This cam is offline right now.</span><a class="btn" href="' + esc(c.page) + '" target="_blank" rel="noopener">See their live streams ↗</a></div>';
+    else view = '<div class="cam-out"><span>' + esc(c.by) + ' only lets this cam play on ' + esc(host) + '.</span><a class="btn" href="' + esc(c.page) + '" target="_blank" rel="noopener">Watch on ' + esc(host) + ' ↗</a>' + (c.note ? '<small>' + esc(c.note) + '</small>' : '') + '</div>';
+    const shown = c.play || c.still;  /* a link-only cam already has its button in the box */
+    const cap = '<div class="cam-cap"><span><b>' + esc(c.name) + '</b>' + (c.name.includes(c.by) ? '' : ' · ' + esc(c.by)) + '</span>' +
+      (c.still && !c.play ? '<span>Latest still picture</span>' : '') + (c.note && shown ? '<span>' + esc(c.note) + '</span>' : '') +
+      (shown ? '<a href="' + esc(c.page) + '" target="_blank" rel="noopener">' + (c.play ? 'Open on ' : 'Watch live on ') + esc(host) + ' ↗</a>' : '') +
+      (c.more && c.play ? '<a href="' + esc(c.more) + '" target="_blank" rel="noopener">Not playing? Their live streams ↗</a>' : '') + '</div>';
+    return '<div class="cams" id="cams-' + esc(s.id) + '"><h4>' + (cams.length > 1 ? 'Live cams' : 'Live cam') + '</h4>' + tabs + '<div class="cam-view">' + view + '</div>' + cap + '</div>';
+  }
+  /* Redraw one spot's cam block. focus: 'tab' puts keyboard focus back on the chosen tab, 'view' on the player or link. */
+  function refreshCams(id, focus) {
+    const el = document.getElementById('cams-' + id); const s = SPOTS.find(x => x.id === id);
+    if (!el || !s) return;
+    el.outerHTML = renderCams(s);
+    const box = document.getElementById('cams-' + id); if (box && focus) focusCam(box, focus === 'tab' ? ['[data-camsel][aria-pressed="true"]'] : CAM_FOCUS);
+  }
+  /* the first of these that exists gets focus: the player itself before any tab */
+  const CAM_FOCUS = ['iframe', '.cam-play', '.cam-out a', '[data-camsel][aria-pressed="true"]'];
+  function focusCam(box, order) { for (const sel of order) { const f = box.querySelector(sel); if (f) { f.focus({ preventScroll: true }); return; } } }
+  /* One stream at a time: starting a cam stops any other that is playing. */
+  function stopOtherCams(id) {
+    Object.keys(state.cams).forEach(k => { if (k !== id && state.cams[k].playing) { state.cams[k].playing = false; refreshCams(k); } });
+  }
+  function playCam(id) { stopOtherCams(id); camState(id).playing = true; refreshCams(id, 'view'); }
+  function showCam(id) {
+    const s = SPOTS.find(x => x.id === id); if (!s || !s.cams || !s.cams.length || !state.analyses[id]) return;
+    const st = camState(id);
+    if (!state.expanded.has(id)) {
+      const first = s.cams.findIndex(c => c.play);
+      st.sel = first < 0 ? 0 : first; st.playing = first >= 0;
+      if (st.playing) stopOtherCams(id);
+      state.expanded.add(id); refreshCard(id);
+    } else if (s.cams[st.sel] && s.cams[st.sel].play && !st.playing) { playCam(id); }
+    const el = document.getElementById('cams-' + id); if (!el) return;
+    focusCam(el, CAM_FOCUS);
+    /* land just below the sticky bars, whose height depends on the screen width */
+    const bars = [$('#top'), $('#filters')].reduce((h, b) => h + (b && getComputedStyle(b).position === 'sticky' ? b.getBoundingClientRect().height : 0), 0);
+    window.scrollTo({ top: Math.max(0, window.scrollY + el.getBoundingClientRect().top - bars - 10), behavior: 'smooth' });
+  }
+  /* cams.json holds what YouTube said at the last build (current stream ids, offline cams). The page itself keeps the
+     cams as webcams.json has them, so index.html only changes when that file does. */
+  async function loadCams() {
+    if (!onWeb) return;
+    try {
+      const r = await fetch('cams.json', { cache: 'no-cache' }); if (!r.ok) return;
+      const j = await r.json(); if (!j || j.v !== 1 || !j.spots || j.src !== SITE.camsSrc) return;
+      SPOTS.forEach(s => { const c = j.spots[s.id]; if (Array.isArray(c) && s.cams && c.length === s.cams.length) s.cams = c; });
+      Object.keys(state.cams).forEach(id => { if (!state.cams[id].playing) refreshCams(id); });
+    } catch (e) { /* keep the cams the page came with */ }
   }
 
   function renderWhy(h, s) {
@@ -1290,7 +1404,7 @@ if (typeof module !== 'undefined') { module.exports = { CSC, SPOTS }; }
         state.markers[s.id] = mk;
       }
       mk.setStyle({ fillColor: col });
-      mk.bindPopup('<span class="badge s' + h.step + '"><span class="num">' + fmtScore(h.score) + '</span><small>' + esc(h.label) + '</small></span><b>' + esc(s.name) + '</b><br><span class="sub">' + esc(mainLine(h)) + '</span><br><button class="link" type="button" data-goto="' + esc(s.id) + '">Open spot</button>');
+      mk.bindPopup('<span class="badge s' + h.step + '"><span class="num">' + fmtScore(h.score) + '</span><small>' + esc(h.label) + '</small></span><b>' + esc(s.name) + '</b><br><span class="sub">' + esc(mainLine(h)) + '</span><br><button class="link" type="button" data-goto="' + esc(s.id) + '">Open spot</button> · <a class="link" href="' + esc(directionsUrl(s)) + '" target="_blank" rel="noopener">Directions</a>');
       if (visible.has(s.id)) { if (!state.map.hasLayer(mk)) mk.addTo(state.map); } else if (state.map.hasLayer(mk)) state.map.removeLayer(mk);
     });
     if (list.length && state.region !== 'all') { const b = L.latLngBounds(list.map(s => [s.lat, s.lon])); state.map.fitBounds(b.pad(0.3), { maxZoom: 11 }); }
@@ -1331,19 +1445,30 @@ if (typeof module !== 'undefined') { module.exports = { CSC, SPOTS }; }
     state.expanded.add(id); renderCards();
     if (scroll !== false) { const el = document.getElementById('spot-' + id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   }
-  function toggleSpot(id) { if (state.expanded.has(id)) state.expanded.delete(id); else state.expanded.add(id); renderCards(); }
+  function toggleSpot(id) {
+    if (state.expanded.has(id)) { state.expanded.delete(id); if (state.cams[id]) state.cams[id].playing = false; }  /* closing a card stops its cam */
+    else state.expanded.add(id);
+    refreshCard(id);
+  }
 
   document.addEventListener('click', e => {
-    const t = e.target.closest('[data-goto],[data-toggle],[data-fav],[data-region],[data-dellog]'); if (!t) return;
-    if (t.dataset.goto) { openSpot(t.dataset.goto, true); }
+    const t = e.target.closest('[data-goto],[data-toggle],[data-fav],[data-region],[data-dellog],[data-cam],[data-camsel],[data-camplay]'); if (!t) return;
+    if (t.dataset.cam) { showCam(t.dataset.cam); }
+    else if (t.dataset.camsel) { const st = camState(t.dataset.camsel); if (+t.dataset.i === st.sel) return; st.sel = +t.dataset.i; st.playing = false; refreshCams(t.dataset.camsel, 'tab'); }
+    else if (t.dataset.camplay) { playCam(t.dataset.camplay); }
+    else if (t.dataset.goto) { openSpot(t.dataset.goto, true); }
     else if (t.dataset.toggle) { toggleSpot(t.dataset.toggle); }
-    else if (t.dataset.fav) { const id = t.dataset.fav; if (state.favs.has(id)) state.favs.delete(id); else state.favs.add(id); store.set(FAV_KEY, Array.from(state.favs)); renderCards(); if (state.favOnly) { renderLead(); renderPlanner(); renderMap(); } }
+    else if (t.dataset.fav) {
+      const id = t.dataset.fav; if (state.favs.has(id)) state.favs.delete(id); else state.favs.add(id); store.set(FAV_KEY, Array.from(state.favs));
+      if (state.favOnly) { renderCards(); renderLead(); renderPlanner(); renderMap(); } else t.setAttribute('aria-pressed', String(state.favs.has(id)));
+    }
     else if (t.dataset.region) { state.region = t.dataset.region; renderFilters(); renderLead(); renderCards(); renderPlanner(); renderMap(); }
     else if (t.dataset.dellog) { const log = store.get(LOG_KEY, []).filter(x => x.id !== t.dataset.dellog); store.set(LOG_KEY, log); renderLog(); }
   });
   $('#levelSel').addEventListener('change', e => { state.level = e.target.value; renderLead(); renderCards(); renderPlanner(); renderMap(); });
   $('#sortSel').addEventListener('change', e => { state.sort = e.target.value; renderLead(); renderCards(); renderPlanner(); });
   $('#favBtn').addEventListener('click', () => { state.favOnly = !state.favOnly; renderFilters(); renderLead(); renderCards(); renderPlanner(); renderMap(); });
+  $('#camBtn').addEventListener('click', () => { state.camOnly = !state.camOnly; renderFilters(); renderLead(); renderCards(); renderPlanner(); renderMap(); });
   let searchTimer; $('#searchBox').addEventListener('input', e => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { state.search = e.target.value; renderLead(); renderCards(); renderPlanner(); renderMap(); }, 150); });
   $('#refreshBtn').addEventListener('click', () => { if (state.data) load(true); else load(false); });
   $('#showAll').addEventListener('click', () => { state.showAllCards = true; renderCards(); });
@@ -1451,5 +1576,6 @@ if (typeof module !== 'undefined') { module.exports = { CSC, SPOTS }; }
 
   $('#unitsBtn').textContent = unitsLabel();
   load(false);
+  loadCams();
 })();
 </script>

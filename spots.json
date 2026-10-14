@@ -1421,6 +1421,11 @@
   "lat": -34.0234,
   "lon": 18.3314,
   "coord_source": "Nominatim Sandy Bay Beach -34.0234, 18.3314 (beach centre, result supplied with this task); Wannasurf prints 34 0.816S 18 20.079E (-34.0136, 18.3347) at the northern end where the path arrives. surf-forecast.com's distances (3 km to Hout Bay, 4 km to Dungeons) fit the Nominatim point.",
+  "access": {
+   "lat": -34.0113,
+   "lon": 18.3356,
+   "note": "Sunset Rocks car park at the south end of Llandudno, then a 20-minute walk."
+  },
   "break_type": "beach",
   "swell_dir_min": 195,
   "swell_dir_max": 290,
@@ -1508,6 +1513,11 @@
   "lat": -34.0612,
   "lon": 18.3268,
   "coord_source": "Surfline anchor (Dungeons -34.0612, 18.3268); Wannasurf GPS 34 3.706S 18 19.594E (-34.0618, 18.3266) agrees within 70 m.",
+  "access": {
+   "lat": -34.0492,
+   "lon": 18.3455,
+   "note": "Hout Bay harbour: charter boat or jet ski to the channel east of the peak, or a very long paddle."
+  },
   "break_type": "slab",
   "swell_dir_min": 200,
   "swell_dir_max": 290,
@@ -1554,6 +1564,11 @@
   "lat": -34.095,
   "lon": 18.3522,
   "coord_source": "Surfline anchor 'The Hoek' (-34.095, 18.3522); Wannasurf pin -34.0977, 18.3513 agrees within 300 m",
+  "access": {
+   "lat": -34.0983,
+   "lon": 18.358,
+   "note": "Noordhoek beach car park, then a 15-minute walk north along the beach. Take water and your keys."
+  },
   "break_type": "beach",
   "swell_dir_min": 225,
   "swell_dir_max": 315,
@@ -1644,6 +1659,11 @@
   "lat": -34.1165,
   "lon": 18.3481,
   "coord_source": "Surfline anchor 'The Dunes' (-34.1165, 18.3481); Wannasurf pin -34.1083, 18.3515 sits 900 m further north on the same beach",
+  "access": {
+   "lat": -34.0983,
+   "lon": 18.358,
+   "note": "Noordhoek beach car park, then a 25 to 30-minute walk south along the beach, or walk in from the Kommetjie side."
+  },
   "break_type": "beach",
   "swell_dir_min": 225,
   "swell_dir_max": 315,
@@ -1730,6 +1750,11 @@
   "lat": -34.1271,
   "lon": 18.3321,
   "coord_source": "Surfline anchor 'Sunset Reef' (-34.1271, 18.3321), about 1 km off Long Beach",
+  "access": {
+   "lat": -34.1361,
+   "lon": 18.3289,
+   "note": "Long Beach, Kommetjie: the reef is about 1 km out. Tow-surf permits and launch rules come from Tow Surf South Africa."
+  },
   "break_type": "reef",
   "swell_dir_min": 240,
   "swell_dir_max": 300,
@@ -1773,6 +1798,11 @@
   "lat": -34.1328,
   "lon": 18.3261,
   "coord_source": "mondo.surf Boneyards listing coordinates (-34.132819, 18.326080) as shown in a web-search result title (page not opened); surf-forecast -34.13, 18.32 (2 dp) agrees; an outer reef off Long Beach",
+  "access": {
+   "lat": -34.1361,
+   "lon": 18.3289,
+   "note": "Long Beach, Kommetjie, then a long paddle out to the reef."
+  },
   "break_type": "reef",
   "swell_dir_min": 215,
   "swell_dir_max": 290,
@@ -1904,6 +1934,11 @@
   "lat": -34.141,
   "lon": 18.3131,
   "coord_source": "Surfline anchor 'Kommetjie' (-34.141, 18.3131), whose spot guide is the Outer Kom; Wannasurf pin -34.1453, 18.3163 is 550 m south-east",
+  "access": {
+   "lat": -34.1418,
+   "lon": 18.3225,
+   "note": "The Kom, Kommetjie: paddle out from the left end of the small harbour. The only way in and out is a rock jump into thick kelp."
+  },
   "break_type": "reef",
   "swell_dir_min": 200,
   "swell_dir_max": 315,
@@ -2255,6 +2290,11 @@
   "lat": -34.2571,
   "lon": 18.3823,
   "coord_source": "OpenStreetMap 'Olifantsbosbaai' bay node via Overpass (-34.2571, 18.3823), the bay and parking; surf-forecast -34.25, 18.38 (2 dp) agrees; OSM 'Olifantsbos Point' is 1.7 km south at -34.2726, 18.3794; the exact take-off along the point is not published",
+  "access": {
+   "lat": -34.259,
+   "lon": 18.3823,
+   "note": "Olifantsbos car park in the Cape of Good Hope reserve (entry fee), then walk. Keep food out of sight of the baboons."
+  },
   "break_type": "point",
   "swell_dir_min": 215,
   "swell_dir_max": 285,
@@ -2341,6 +2381,11 @@
   "lat": -34.3545,
   "lon": 18.4824,
   "coord_source": "Surfline anchor 'Dias Beach' (-34.3545, 18.4824); Wannasurf pin -34.3553, 18.4811, OSM beach way centroid -34.3546, 18.4820 and surf-forecast -34.35, 18.49 all agree",
+  "access": {
+   "lat": -34.3503,
+   "lon": 18.4822,
+   "note": "Cape Point car park in the Cape of Good Hope reserve (entry fee); the beach is down a long flight of stairs."
+  },
   "break_type": "beach",
   "swell_dir_min": 170,
   "swell_dir_max": 240,
