@@ -266,47 +266,6 @@
   "bottom": "reef and beach breaks in a series of small rocky bays"
  },
  {
-  "id": "tsaarsbank",
-  "name": "West Coast National Park (Tsaarsbank)",
-  "aka": [
-   "Tsaarsbank",
-   "Plankiesbaai",
-   "West Coast National Park"
-  ],
-  "region": "west-coast",
-  "area": "West Coast National Park, Langebaan",
-  "lat": -33.1894,
-  "lon": 18.0571,
-  "coord_source": "Surfline anchor 'West Coast National Park' (-33.1894,18.0571), on the Atlantic shore of the park's Postberg peninsula; Nominatim returned nothing for Tsaarsbank",
-  "break_type": "beach",
-  "swell_dir_min": 210,
-  "swell_dir_max": 300,
-  "swell_dir_best": 245,
-  "exposure": "exposed",
-  "size_min_m": 1,
-  "size_max_m": 3,
-  "best_period_s": 12,
-  "wind_offshore_dir": 70,
-  "wind_offshore_tolerance": 60,
-  "tide": "mid",
-  "skill": "intermediate",
-  "hazards": [
-   "rips",
-   "rocks",
-   "remote (park gate hours, no lifeguards)",
-   "cold water"
-  ],
-  "crowd": "light",
-  "best_season": "winter (May to Aug) for W-SW groundswell; park gate hours apply (later opening in winter)",
-  "description": "The Atlantic beaches inside the West Coast National Park, reached through the Langebaan gate: wild, uncrowded sandbar peaks between rock outcrops with the park entry fee as the only crowd control.",
-  "local_notes": "Named only by Surfline (as 'West Coast National Park') among the sources opened; no surf guide with parameters was reached, so the window, wind and sizes are geographic: WSW-facing open coast, ENE offshore, closes out beyond about 3 m offshore. Treat as a low-confidence placeholder until a spot page is opened. Tsaarsbank is on the public part of the park road; the Postberg section beyond it opens only in flower season (Aug to Sep).",
-  "confidence": "low",
-  "sources": [
-   "Surfline anchor list supplied in the task brief (West Coast National Park)"
-  ],
-  "bottom": "beach break with rock outcrops"
- },
- {
   "id": "yzerfontein-main-beach",
   "name": "Yzerfontein Main Beach",
   "aka": [
@@ -658,9 +617,9 @@
   ],
   "region": "west-coast",
   "area": "Bloubergstrand, Cape Town",
-  "lat": -33.794,
-  "lon": 18.4559,
-  "coord_source": "Surfline anchor 'Bloubergstrand' (-33.794,18.4559). It sits 200 m from the Big Bay anchor; the village beach peaks and the Little Bay cove are 0.5 to 1.5 km south along the shore.",
+  "lat": -33.7985,
+  "lon": 18.4575,
+  "coord_source": "The beach in front of Bloubergstrand village, between the Blue Peter Hotel (-33.7963, 18.4588) and Ons Huisie (-33.7995, 18.4590) on OpenStreetMap. Moved here 2026-10-19 from the Surfline anchor (-33.794, 18.4559), which sat on the south end of Big Bay, 200 m from the Big Bay pin.",
   "break_type": "beach",
   "swell_dir_min": 210,
   "swell_dir_max": 300,
@@ -683,7 +642,7 @@
   "crowd": "moderate; heavy with kites in the summer south-easter",
   "best_season": "winter (May to Aug) for SW groundswell; summer mornings before the south-easter (Nov to Mar is kite season)",
   "description": "The beach in front of Bloubergstrand village, just south of Big Bay, with peaks breaking between granite boulders and a smaller, more sheltered cove at Little Bay. The same swell and wind as Big Bay with a rockier line-up.",
-  "local_notes": "Wannasurf's Cape Town index lists both 'Blaauwberg' (rights and lefts, beach break, experienced surfers) and 'Little Bay' (rights and lefts, beach break, all surfers); surf-forecast.com's Big Bay page lists 'Blouberg' and 'Little Bay' as beach breaks 2 km away. No spot page was opened, so swell, wind, tide and size follow Big Bay: SW swell, ESE offshore. Partially shadowed from due-W swell by Robben Island, like Big Bay. Size basis as Big Bay with an earlier close-out on the open sand. The sani.co.za guide covers Blouberg as a kitesurf beach with S, SSE and SE winds from November to March. Little Bay was folded in here rather than listed separately because no verified coordinate for the cove was obtained.",
+  "local_notes": "Wannasurf's Cape Town index lists both 'Blaauwberg' (rights and lefts, beach break, experienced surfers) and 'Little Bay' (rights and lefts, beach break, all surfers); surf-forecast.com's Big Bay page lists 'Blouberg' and 'Little Bay' as beach breaks 2 km away. No spot page was opened, so swell, wind, tide and size follow Big Bay: SW swell, ESE offshore. Partially shadowed from due-W swell by Robben Island, like Big Bay. Size basis as Big Bay with an earlier close-out on the open sand. The sani.co.za guide covers Blouberg as a kitesurf beach with S, SSE and SE winds from November to March. Little Bay, the cove at the village, is folded in here; the pin is on the village beach by Ons Huisie.",
   "confidence": "low",
   "sources": [
    "https://www.wannasurf.com/spot/Africa/South_Africa/Cape_Town/index.html",
@@ -946,45 +905,6 @@
    "Nominatim (OpenStreetMap) search 'Rocklands Beach, Sea Point, Cape Town'"
   ],
   "bottom": "reef (rock), left"
- },
- {
-  "id": "sunset-beach-sea-point",
-  "name": "Sunset Beach (Sea Point)",
-  "aka": [
-   "Sunset Beach"
-  ],
-  "region": "atlantic-seaboard",
-  "area": "Sea Point",
-  "lat": -33.9201,
-  "lon": 18.3808,
-  "coord_source": "Surfline spot list anchor (Sunset Beach -33.9201, 18.3808): the small cove between Milton's tidal pool and Queens Beach.",
-  "break_type": "beach",
-  "swell_dir_min": 205,
-  "swell_dir_max": 300,
-  "swell_dir_best": 240,
-  "exposure": "semi",
-  "size_min_m": 1.5,
-  "size_max_m": 3.5,
-  "best_period_s": 13,
-  "wind_offshore_dir": 130,
-  "wind_offshore_tolerance": 60,
-  "tide": "mid",
-  "skill": "beginner",
-  "hazards": [
-   "rocks",
-   "shore break",
-   "rips"
-  ],
-  "crowd": "light",
-  "best_season": "winter W swell for size; the summer SE wind is offshore",
-  "description": "A small sandy cove on the Sea Point promenade with a short shore break. Surfline lists it as a spot; in practice it is a bodyboard and grom wave for when the Sea Point reefs are too much.",
-  "local_notes": "Named only by Surfline (as a spot with coordinates) and by Wannasurf's Queens page as Queens' northern neighbour; no source gives parameters, so everything here is estimated from the geometry it shares with Queens and Solly's. Treat as low confidence and drop it from the page if it never scores.",
-  "confidence": "low",
-  "sources": [
-   "Surfline Western Cape spot list (anchor coordinates supplied with this task)",
-   "https://www.wannasurf.com/spot/Africa/South_Africa/Cape_Town/queens/index.html"
-  ],
-  "bottom": "beach / shore break with rocks"
  },
  {
   "id": "sollys",
@@ -1372,43 +1292,6 @@
    "Surfline Western Cape spot list (anchor coordinates supplied with this task)"
   ],
   "bottom": "beach break, lefts and rights, three peaks; hollow wedging right (The Gat) off the rocks at the north end"
- },
- {
-  "id": "sections-llandudno",
-  "name": "Sections",
-  "aka": [],
-  "region": "atlantic-seaboard",
-  "area": "Between Llandudno and Sandy Bay",
-  "lat": -34.0115,
-  "lon": 18.336,
-  "coord_source": "Estimated: surf-forecast.com prints 34.01S 18.34E (2 dp) and lists it 1 km from both Llandudno and Sandy Bay, which puts it on the Sunset Rocks headland between the two beaches. Not verified by any other source.",
-  "break_type": "reef",
-  "swell_dir_min": 200,
-  "swell_dir_max": 290,
-  "swell_dir_best": 225,
-  "exposure": "exposed",
-  "size_min_m": 1.5,
-  "size_max_m": 4,
-  "best_period_s": 14,
-  "wind_offshore_dir": 70,
-  "wind_offshore_tolerance": 60,
-  "tide": "mid",
-  "skill": "advanced",
-  "hazards": [
-   "rocks",
-   "sharks (surf-forecast notes sightings)",
-   "little local information"
-  ],
-  "crowd": "light - never a problem (surf-forecast)",
-  "best_season": "autumn (Mar to May) SW groundswell with an east wind",
-  "description": "A right-hand reef on the rocky headland between Llandudno and Sandy Bay that surf-forecast.com rates fairly consistent, fairly exposed and uncrowded.",
-  "local_notes": "Single source (surf-forecast.com): fairly exposed reef, right, SW swell, E offshore, distant groundswells, April best (39 percent clean), crowds never a problem, 'be wary of sharks, they are not unknown here'. Not on Wannasurf, Surfline or mondo.surf, so the name may be a contributor's; tide, size and skill here are geography-based guesses for a rock reef taking full SW swell. Low confidence: check with a local before adding it to a plan.",
-  "confidence": "low",
-  "sources": [
-   "https://www.surf-forecast.com/breaks/Sections",
-   "https://www.surf-forecast.com/breaks/Llandudno_1"
-  ],
-  "bottom": "reef (rock), right"
  },
  {
   "id": "sandy-bay",
@@ -2420,42 +2303,6 @@
   "bottom": "heavy beach break / shorebreak with rock (rights and lefts, a right-hand reef at one end)"
  },
  {
-  "id": "long-beach-simons-town",
-  "name": "Long Beach (Simon's Town)",
-  "aka": [],
-  "region": "false-bay",
-  "area": "Simon's Town",
-  "lat": -34.184,
-  "lon": 18.426,
-  "coord_source": "Surfline 'Simon's Town' -34.1837, 18.4253",
-  "break_type": "beach",
-  "swell_dir_min": 100,
-  "swell_dir_max": 200,
-  "swell_dir_best": 150,
-  "exposure": "sheltered",
-  "size_min_m": 1.5,
-  "size_max_m": 4,
-  "best_period_s": 14,
-  "wind_offshore_dir": 235,
-  "wind_offshore_tolerance": 60,
-  "tide": "mid-high",
-  "skill": "beginner",
-  "hazards": [
-   "boat traffic from the harbour",
-   "sharks",
-   "cold water"
-  ],
-  "crowd": "light",
-  "best_season": "big winter S to SE swells",
-  "description": "A small, sheltered learner wave beside the naval harbour that only shows on a big south swell. Surf-school territory.",
-  "local_notes": "Not described by surf-forecast; parameters estimated from the geometry (beach faces NE, wind off the mountain is SW). Low confidence.",
-  "confidence": "low",
-  "sources": [
-   "Surfline Western Cape spot list (coordinates)"
-  ],
-  "bottom": "beach break with a sand bottom"
- },
- {
   "id": "glencairn",
   "name": "Glencairn",
   "aka": [],
@@ -2493,46 +2340,12 @@
   "bottom": "beach break plus a left-hand reef"
  },
  {
-  "id": "fish-hoek",
-  "name": "Fish Hoek",
-  "aka": [],
-  "region": "false-bay",
-  "area": "Fish Hoek",
-  "lat": -34.136,
-  "lon": 18.433,
-  "coord_source": "Surfline Fish Hoek -34.1333, 18.4333 (beach centre used)",
-  "break_type": "beach",
-  "swell_dir_min": 120,
-  "swell_dir_max": 230,
-  "swell_dir_best": 160,
-  "exposure": "sheltered",
-  "size_min_m": 1.2,
-  "size_max_m": 3.5,
-  "best_period_s": 12,
-  "wind_offshore_dir": 295,
-  "wind_offshore_tolerance": 60,
-  "tide": "all",
-  "skill": "beginner",
-  "hazards": [
-   "dangerous rips",
-   "sharks (Shark Spotters and exclusion net)",
-   "crowds"
-  ],
-  "crowd": "moderate",
-  "best_season": "winter SE swell with a WNW wind",
-  "description": "A long, family beach with gentle peaks that run year round, best on south-east swell with a westerly wind.",
-  "local_notes": "surf-forecast: beach, SE swell, WNW offshore, consistent, lefts and rights, dangerous rips, crowded. Shark Spotters watch this beach.",
-  "confidence": "medium",
-  "sources": [
-   "https://www.surf-forecast.com/breaks/Fish-Hoek",
-   "Surfline Western Cape spot list (coordinates)"
-  ],
-  "bottom": "beach break with lefts and rights"
- },
- {
   "id": "clovelly",
   "name": "Clovelly",
-  "aka": [],
+  "aka": [
+   "Clovelly Corner",
+   "Fish Hoek (north corner)"
+  ],
   "region": "false-bay",
   "area": "Fish Hoek",
   "lat": -34.1298,
@@ -2553,15 +2366,18 @@
   "hazards": [
    "rocks",
    "shallow inside",
-   "sharks"
+   "rips at the river mouth",
+   "sharks (Shark Spotters at Fish Hoek year-round, Clovelly in season)"
   ],
   "crowd": "light",
-  "best_season": "winter SE swell with a NW wind",
-  "description": "The sheltered corner at the Clovelly end of Fish Hoek beach: soft, forgiving and usually uncrowded.",
-  "local_notes": "surf-forecast: beach, SE swell, NW offshore, beginner, uncrowded, rocks and shallow.",
+  "best_season": "winter S to SE groundswell with a NW wind; otherwise mostly flat",
+  "description": "The corner at the Clovelly end of Fish Hoek bay, by the Silvermine river mouth: the one place in the bay that surfers actually use. Flat most of the year, it comes alive when a big south to south-east winter swell wraps in under a north-wester, with lefts off the rocks and a soft, forgiving inside.",
+  "local_notes": "surf-forecast: beach, SE swell, NW offshore, beginner, uncrowded, rocks and shallow. Wannasurf/mondo.surf ('Clovelly Beach'): very inconsistent, works mainly when strong north-west winds blow, 2 to 4.5 ft and up to 5 or 6 ft in gale conditions, sharks about. 2026-10-19: the separate 'Fish Hoek' entry was removed after Cape Town locals pointed out that nobody surfs the main beach. It is a sheltered swimming beach with a summer shark-exclusion net (October to May); surf-forecast's Fish Hoek page is a catalogue entry, not a surfer's guide, and neither Wannasurf nor mondo.surf lists it. Shark Spotters watch Fish Hoek year-round and Clovelly in the spring and summer season.",
   "confidence": "medium",
   "sources": [
-   "https://www.surf-forecast.com/breaks/Clovelly-1"
+   "https://www.surf-forecast.com/breaks/Clovelly-1",
+   "https://www.mondo.surf/surf-spot/clovelly-beach/guide/12120",
+   "Cape Town locals via Ciaran, 2026-10-19 (Fish Hoek main beach is not a surf spot)"
   ],
   "bottom": "beach break in the corner, rocks on the inside"
  },

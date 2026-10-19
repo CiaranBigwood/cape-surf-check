@@ -212,6 +212,7 @@ a.btn { display: inline-flex; align-items: center; color: inherit; text-decorati
 .cam-out small { color: #b3c3c9; }
 .cam-cap { font-size: .8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 2px 12px; }
 .cam-cap b { color: var(--ink-2); font-weight: 600; }
+.cam-cap .cam-hint { flex-basis: 100%; color: var(--ink-2); }
 .detail { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; padding-top: 6px; border-top: 1px solid var(--line); }
 .detail > *, .two > *, .card > *, .metric, .share-main, .learn .body > * { min-width: 0; }
 .detail h4 { font-size: .98rem; margin-bottom: 8px; }
@@ -1250,6 +1251,9 @@ if (typeof module !== 'undefined') { module.exports = { CSC, SPOTS }; }
   const freshStill = u => u + (u.includes('?') ? '&' : '?') + 't=' + Math.floor(Date.now() / 60000);
   const PLAY_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>';
   function camState(id) { return state.cams[id] || (state.cams[id] = { sel: 0, playing: false }); }
+  /* Apps' built-in browsers (Teams, WhatsApp, Facebook, Instagram, Android WebViews, iOS web views) often refuse to play
+     embedded video, so say so next to the player and point to a real browser. */
+  const IN_APP = (() => { const ua = navigator.userAgent || ''; return /\bwv\b|FBAN|FBAV|Instagram|Line\/|MicroMessenger|TeamsMobile/i.test(ua) || (/iPhone|iPad|iPod/.test(ua) && !/Safari\//.test(ua)); })();
   function renderCams(s) {
     const cams = s.cams || []; if (!cams.length) return '';
     const st = camState(s.id); const i = Math.min(st.sel, cams.length - 1); const c = cams[i]; const host = hostName(c.page);
@@ -1264,7 +1268,8 @@ if (typeof module !== 'undefined') { module.exports = { CSC, SPOTS }; }
     const cap = '<div class="cam-cap"><span><b>' + esc(c.name) + '</b>' + (c.name.includes(c.by) ? '' : ' · ' + esc(c.by)) + '</span>' +
       (c.still && !c.play ? '<span>Latest still picture</span>' : '') + (c.note && shown ? '<span>' + esc(c.note) + '</span>' : '') +
       (shown ? '<a href="' + esc(c.page) + '" target="_blank" rel="noopener">' + (c.play ? 'Open on ' : 'Watch live on ') + esc(host) + ' ↗</a>' : '') +
-      (c.more && c.play ? '<a href="' + esc(c.more) + '" target="_blank" rel="noopener">Not playing? Their live streams ↗</a>' : '') + '</div>';
+      (c.more && c.play ? '<a href="' + esc(c.more) + '" target="_blank" rel="noopener">Not playing? Their live streams ↗</a>' : '') +
+      (IN_APP && c.play ? '<span class="cam-hint">Inside an app’s built-in browser the video may not play: open this page in Chrome or Safari.</span>' : '') + '</div>';
     return '<div class="cams" id="cams-' + esc(s.id) + '"><h4>' + (cams.length > 1 ? 'Live cams' : 'Live cam') + '</h4>' + tabs + '<div class="cam-view">' + view + '</div>' + cap + '</div>';
   }
   /* Redraw one spot's cam block. focus: 'tab' puts keyboard focus back on the chosen tab, 'view' on the player or link. */

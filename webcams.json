@@ -49,13 +49,6 @@
  },
  {
   "spots": ["camps-bay"],
-  "name": "North end",
-  "by": "South Beach Camps Bay",
-  "ipcamlive": "cbbsb",
-  "page": "https://southbeachsa.com/south-beach-camps-bay-live-webcam-current-weather/"
- },
- {
-  "spots": ["camps-bay"],
   "name": "Beachfront",
   "by": "The Bay Hotel",
   "ipcamlive": "vnlbeach",

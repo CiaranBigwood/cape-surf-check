@@ -1,6 +1,6 @@
 # Cape Surf Check
 
-Where to surf in the Western Cape: a rating out of 10 for 103 spots, hour by hour, with wind, swell, tides,
+Where to surf in the Western Cape: a rating out of 10 for 98 spots, hour by hour, with wind, swell, tides,
 water temperature, wetsuit hints and a 9-day outlook. Every spot has a **Directions** button that opens Google
 Maps, and spots with a public webcam have a **Live cam** button. Free, no app, no account.
 
@@ -83,7 +83,7 @@ Then open http://localhost:8000. Python 3.9 or later, standard library only.
 | File | What it is |
 |---|---|
 | `template.html` | The page: layout, styles, the rating engine and the app code |
-| `spots.json` | The 103 spots and their rules |
+| `spots.json` | The 98 spots and their rules |
 | `webcams.json` | The live cams and the spots they show |
 | `build.py` | Fetches the forecast and assembles `_site/` |
 | `sw.js`, `manifest.webmanifest`, `assets/` | Offline support, home-screen install and icons |

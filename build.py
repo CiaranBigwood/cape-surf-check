@@ -390,7 +390,7 @@ def document(head_part, body_part, public_url):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Where to surf in the Western Cape: ratings, wind, swell, tides and water temperature for 103 spots, with a 9-day outlook.">
+<meta name="description" content="Where to surf in the Western Cape: ratings, wind, swell, tides and water temperature for 98 spots, with a 9-day outlook.">
 <meta name="theme-color" content="#0b6f85">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -403,7 +403,7 @@ def document(head_part, body_part, public_url):
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cape Surf Check">
 <meta property="og:title" content="Cape Surf Check">
-<meta property="og:description" content="Where to surf in the Western Cape this week: ratings, wind, tides and water temperature for 103 spots.">
+<meta property="og:description" content="Where to surf in the Western Cape this week: ratings, wind, tides and water temperature for 98 spots.">
 {og}<style>html,body{{margin:0}}[hidden]{{display:none!important}}img{{max-width:100%}}</style>
 {head_part}<style>@supports (padding: max(0px)) {{ body {{ padding-left: max(clamp(16px, 3vw, 32px), env(safe-area-inset-left)); padding-right: max(clamp(16px, 3vw, 32px), env(safe-area-inset-right)); }} }}</style>
 </head>

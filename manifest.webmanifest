@@ -1,7 +1,7 @@
 {
   "name": "Cape Surf Check",
   "short_name": "Surf Check",
-  "description": "Where to surf in the Western Cape: ratings, wind, swell, tides and water temperature for 103 spots, with a 9-day outlook.",
+  "description": "Where to surf in the Western Cape: ratings, wind, swell, tides and water temperature for 98 spots, with a 9-day outlook.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
